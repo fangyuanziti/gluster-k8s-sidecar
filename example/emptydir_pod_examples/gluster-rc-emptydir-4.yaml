@@ -13,42 +13,36 @@
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: mongo-4
+  name: gluster-4
 spec:
   replicas: 1
   selector:
-    name: mongo-node-4
-    role: mongo
+    name: gluster-node-4
+    role: gluster
     environment: test
   template:
     spec:
       containers:
-        - name: mongo-node-4
-          image: mongo
-          command:
-            - mongod
-            - "--replSet"
-            - rs0
-            - "--smallfiles"
-            - "--noprealloc"
+        - name: gluster-node-4
+          image: gluster/gluster-centos
           ports:
             - containerPort: 27017
           volumeMounts:
-            - name: mongo-persistent-storage
-              mountPath: /data/db
-        - name: mongo-sidecar
-          image: leportlabs/mongo-k8s-sidecar
+            - name: gluster-persistent-storage
+              mountPath: /data/dfs
+        - name: gluster-sidecar
+          image: gcr.io/swift-hope-776/gluster-k8s-sidecar
           env:
-            - name: MONGO_SIDECAR_POD_LABELS
-              value: "role=mongo,environment=test"
+            - name: GLUSTER_SIDECAR_POD_LABELS
+              value: "role=gluster,environment=test"
       volumes:
-        - name: mongo-persistent-storage
+        - name: gluster-persistent-storage
           flocker:
-            datasetName: flockermongorc-4
+            datasetName: flockerglusterrc-4
       nodeSelector:
         node: "2"
     metadata:
       labels:
-        name: mongo-node-4
-        role: mongo
+        name: gluster-node-4
+        role: gluster
         environment: test

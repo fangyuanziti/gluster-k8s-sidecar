@@ -1,7 +1,7 @@
 {
-  "name": "mongo-k8s-sidecar",
+  "name": "gluster-k8s-sidecar",
   "version": "0.1.0",
-  "description": "Kubernetes sidecar for mongo",
+  "description": "Kubernetes sidecar for GlusterFS",
   "main": "src/index.js",
   "scripts": {
     "start": "forever src/index.js",
@@ -9,24 +9,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/leportlabs/mongo-k8s-sidecar.git"
+    "url": "https://github.com/neshte/gluster-k8s-sidecar.git"
   },
   "keywords": [
     "kubernetes",
     "k8s",
-    "mongo",
-    "mongodb",
+    "gluster",
+    "glusterfs",
     "sidecar",
     "docker",
-    "replica",
-    "replicaset"
+    "dfs",
+    "storage"
   ],
-  "author": "LePort Labs",
+  "author": "neshte",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/leportlabs/mongo-k8s-sidecar/issues"
+    "url": "https://github.com/neshte/gluster-k8s-sidecar/issues"
   },
-  "homepage": "https://github.com/leportlabs/mongo-k8s-sidecar",
+  "homepage": "https://github.com/neshte/gluster-k8s-sidecar",
   "devDependencies": {
     "chai": "^2.3.0",
     "mocha": "^2.2.4"
@@ -35,8 +35,8 @@
     "async": "^1.5.0",
     "forever": "^0.14.1",
     "ip": "^0.3.2",
-    "moment": "^2.10.2",
-    "mongodb": "^2.0.28",
-    "node-kubernetes-client": "^0.1.9"
+    "validator": "^5.2.0",
+    "node-kubernetes-client": "^0.1.9",
+    "simple-ssh": "^0.9.0"
   }
 }

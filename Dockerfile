@@ -1,9 +1,9 @@
 FROM node:latest
-MAINTAINER LePort Labs
+MAINTAINER neshte
 
-COPY . /opt/leport/mongo-k8s-sidecar
+COPY . /opt/neshte/gluster-k8s-sidecar
 
-WORKDIR /opt/leport/mongo-k8s-sidecar
+WORKDIR /opt/neshte/gluster-k8s-sidecar
 
 RUN npm install
 

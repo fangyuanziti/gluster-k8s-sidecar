@@ -1,13 +1,13 @@
-var getMongoPodLabels = function() {
-  return process.env.MONGO_SIDECAR_POD_LABELS || false;
+var getGlusterPodLabels = function() {
+  return process.env.GLUSTER_SIDECAR_POD_LABELS || false;
 };
 
-var getMongoPodLabelCollection = function() {
-  var podLabels = getMongoPodLabels();
+var getGlusterPodLabelCollection = function() {
+  var podLabels = getGlusterPodLabels();
   if (!podLabels) {
     return false;
   }
-  var labels = process.env.MONGO_SIDECAR_POD_LABELS.split(',');
+  var labels = process.env.GLUSTER_SIDECAR_POD_LABELS.split(',');
   for (var i in labels) {
     var keyAndValue = labels[i].split('=');
     labels[i] = {
@@ -24,10 +24,12 @@ var getKubernetesROServiceAddress = function() {
 };
 
 module.exports = {
-  loopSleepSeconds: process.env.MONGO_SIDECAR_SLEEP_SECONDS || 5,
-  unhealthySeconds: process.env.MONGO_SIDECAR_UNHEALTHY_SECONDS || 15,
+  loopSleepSeconds: process.env.GLUSTER_SIDECAR_SLEEP_SECONDS || 5,
+  unhealthySeconds: process.env.GLUSTER_SIDECAR_UNHEALTHY_SECONDS || 15,
+  glusterClusterName: process.env.GLUSTER_SIDECAR_CLUSTER_NAME || 'glusterfs-cluster',
+  glusterClusterPort: process.env.GLUSTER_SIDECAR_CLUSTER_PORT || 1,
   env: process.env.NODE_ENV || 'local',
-  mongoPodLabels: getMongoPodLabels(),
-  mongoPodLabelCollection: getMongoPodLabelCollection(),
+  glusterPodLabels: getGlusterPodLabels(),
+  glusterPodLabelCollection: getGlusterPodLabelCollection(),
   kubernetesROServiceAddress: getKubernetesROServiceAddress()
 };

@@ -1,12 +1,12 @@
 # How to use this makefile
-- Count how many MongoDB instances are up
+- Count how many GlusterFS instances are up
    - ```make count```
-- Add a replica
-   - ```make add-replica```
+- Add a glusternode
+   - ```make add-glusternode```
    - Options:
      - ```DISK_SIZE``` (i.e 500GB, 1TB)
      - ```ZONE``` (i.e us-central1-f)
      - ```ENV``` (i.e GoogleCloudPlatform)
-- Delete a replica
-   - ```make delete-replica```
-   - This will delete the last replica that was added
+- Delete a glusternode
+   - ```make delete-glusternode```
+   - This will delete the last glusternode that was added

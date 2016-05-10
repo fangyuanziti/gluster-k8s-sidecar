@@ -1,6 +1,5 @@
 var Client = require('node-kubernetes-client');
 var config = require('./config');
-var util = require("util");
 
 fs = require('fs');
 
@@ -13,7 +12,7 @@ var client = new Client({
   token: readToken
 });
 
-var getMongoPods = function getPods(done) {
+var getGlusterPods = function getGlusterPods(done) {
   client.pods.get(function (err, podResult) {
     if (err) {
       return done(err);
@@ -22,7 +21,7 @@ var getMongoPods = function getPods(done) {
     for (var j in podResult) {
       pods = pods.concat(podResult[j].items)
     }
-    var labels = config.mongoPodLabelCollection;
+    var labels = config.glusterPodLabelCollection;
     var results = [];
     for (var i in pods) {
       var pod = pods[i];
@@ -49,5 +48,5 @@ var podContainsLabels = function podContainsLabels(pod, labels) {
 };
 
 module.exports = {
-  getMongoPods: getMongoPods
+  getGlusterPods: getGlusterPods
 };
