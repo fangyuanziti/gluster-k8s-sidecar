@@ -39,7 +39,7 @@ var workloop = function workloop() {
         //filter just those that are not my ip
         var queriedPods = [];
         for(var i=0; i< pods.length; i+=1){
-            if(hostIp !== pods[i].status.podIP){
+            if(hostIp !== pods[i].status.podIP && pods[i].status.podIP !== undefined){
                 queriedPods.push(pods[i]);
             }
         }
@@ -70,7 +70,7 @@ var workloop = function workloop() {
                     break;
                 }
             }
-            if(!foundPod){
+            if(!foundPod && lastPods[i].status.podIP !== undefined){
                 podsObsolete.push(lastPods[i]);
                 console.log('obsolete pod detected: '+lastPods[i].status.podIP);
             }
@@ -89,15 +89,19 @@ var workloop = function workloop() {
                         if(!err){
                             probedips.push(ip);
                             console.log('probed: '+ip);
-                            console.log(res);
+                        }else{
+                            console.log(err);
                         }
+                        console.log(res);
                         callback(err, res);
                     });
                 })
             }
             async.parallel(probes,function(err, results){
+                console.log(results);
                 if(err){
                     console.log(err);
+                    finish();
                 }else{
                     //build the new endpoint yaml
                     //kubectl replace -f newyaml of endpoints
@@ -121,15 +125,18 @@ var workloop = function workloop() {
                             console.log('updated gluster endpoints');
                             console.log(res);
                         }
+                        finish();
                     });
                 }
             });
 
         }
-        lastPods = queriedPods;
 
-        //wait 5 seconds and check again ips
-        setTimeout(workloop, loopSleepSeconds * 1000);
+        function finish(){
+            lastPods = queriedPods;
+            //wait 5 seconds and check again ips
+            setTimeout(workloop, loopSleepSeconds * 1000);
+        }
 
   });
 
