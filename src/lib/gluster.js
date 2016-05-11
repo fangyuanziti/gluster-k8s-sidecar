@@ -26,27 +26,27 @@ var peerProbeServer = function(host, ip, callback){
             user: 'root',
             pass: 'password'
         });
-        var serr = '';
-        var sout = '';
         console.log('will send the command by ssh');
         ssh.exec('gluster peer probe '+ip, {
-            err: function(stderr){
-                console.log('received stderr');
-                serr += stderr;
-            },
-            out: function(stdout) {
-                console.log('received stdout');
-                sout += stdout;
-            },
-            exit: function(code){
+            exit: function(code, stdout, stderr){
                 console.log('received exit '+code);
+                ssh.end();
                 if(code == 0){
                     callback(null, stdout);
                 }else{
                     callback(code, stderr);
                 }
             }
-        }).start();
+        }).start({
+            success:function(){
+                console.log('successfuly connected');
+            },
+            fail:function(err){
+                console.log('failed to connect');
+                console.log(err);
+                ssh.end();
+            }
+        });
     }else{
         callback('invalid server ip and/or host ip');
     }
