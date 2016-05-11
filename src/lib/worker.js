@@ -130,6 +130,8 @@ var workloop = function workloop() {
                 }
             });
 
+        }else{
+            finish();
         }
 
         function finish(){
