@@ -20,8 +20,8 @@ var init = function(done) {
       return done(err);
     }
 
-    console.log('this pod ip: '+hostIp);
     hostIp = addr;
+    console.log('this pod ip: '+hostIp);
 
     done();
   });
