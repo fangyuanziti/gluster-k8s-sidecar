@@ -16,7 +16,11 @@ var client = new Client({
 });
 
 var peerProbeServer = function(host, ip, callback){
+    console.log('being asked to probe ip '+ip);
     if(validator.isIP(ip) && validator.isIP(host)){
+        console.log('has valid ip '+ip);
+        console.log('has valid host '+host);
+        console.log('will connect by ssh ');
         var ssh = new SSH({
             host: host,
             user: 'root',
@@ -24,14 +28,18 @@ var peerProbeServer = function(host, ip, callback){
         });
         var serr = '';
         var sout = '';
+        console.log('will send the command by ssh');
         ssh.exec('gluster peer probe '+ip, {
             err: function(stderr){
+                console.log('received stderr');
                 serr += stderr;
             },
             out: function(stdout) {
+                console.log('received stdout');
                 sout += stdout;
             },
             exit: function(code){
+                console.log('received exit '+code);
                 if(code == 0){
                     callback(null, stdout);
                 }else{
