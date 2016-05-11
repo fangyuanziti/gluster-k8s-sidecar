@@ -6,7 +6,7 @@ resilient to the various conditions both gluster and kubernetes can find themsel
 ## How to use it
 
 The docker image is hosted on docker hub and can be found here:  
-https://registry.hub.docker.com/u/neshte/gluster-k8s-sidecar/
+https://hub.docker.com/r/neshte/gluster-k8s-sidecar/
 
 An example kubernetes replication controller can be found in the examples directory on github here:  
 https://github.com/neshte/gluster-k8s-sidecar
