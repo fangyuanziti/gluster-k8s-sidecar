@@ -4,6 +4,7 @@ var config = require('./config');
 var exec = require('child_process').exec;
 var validator = require('validator');
 var SSH = require('simple-ssh');
+var fs = require('fs');
 
 var readToken = fs.readFileSync('/var/run/secrets/kubernetes.io/serviceaccount/token');
 
