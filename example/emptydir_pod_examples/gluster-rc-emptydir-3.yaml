@@ -28,9 +28,14 @@ spec:
           ports:
             - containerPort: 27017
               hostPort: 4000
+          securityContext:
+            - privileged: true
           volumeMounts:
             - name: gluster-persistent-storage
               mountPath: /data/dfs
+            - name: gluster-kernel-control-groups
+              readOnly: true
+              mountPath: /sys/fs/cgroup
         - name: gluster-sidecar
           image: neshte/gluster-k8s-sidecar
           env:
@@ -39,6 +44,9 @@ spec:
       volumes:
         - name: gluster-persistent-storage
           emptyDir: {}
+        - name: gluster-kernel-control-groups
+          hostPath:
+            path: /sys/fs/cgroup
     metadata:
       labels:
         name: gluster-node-3

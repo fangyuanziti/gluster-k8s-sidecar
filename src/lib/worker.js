@@ -10,6 +10,7 @@ var loopSleepSeconds = config.loopSleepSeconds;
 var unhealthySeconds = config.unhealthySeconds;
 
 var hostIp = false;
+var thisPodName = false;
 var lastPods = [];
 
 var init = function(done) {
@@ -41,6 +42,13 @@ var workloop = function workloop() {
         for(var i=0; i< pods.length; i+=1){
             if(hostIp !== pods[i].status.podIP && pods[i].status.podIP !== undefined){
                 queriedPods.push(pods[i]);
+            }else{
+                if(hostIp == pods[i].status.podIP){
+                    if(thisPodName == false){
+                        console.log('this pod name: '+pods[i].metadata.name);
+                    }
+                    thisPodName = pods[i].metadata.name;
+                }
             }
         }
 
@@ -85,7 +93,7 @@ var workloop = function workloop() {
                 var ip = podsDetectedNew[i].status.podIP;
                 probes.push(function(callback){
                     console.log('probing: '+ip);
-                    gluster.peerProbeServer(hostIp, ip, function(err, res){
+                    gluster.peerProbeServer(thisPodName, ip, function(err, res){
                         if(!err){
                             probedips.push(ip);
                             console.log('probed: '+ip);

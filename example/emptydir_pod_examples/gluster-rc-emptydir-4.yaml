@@ -27,9 +27,14 @@ spec:
           image: gluster/gluster-centos
           ports:
             - containerPort: 27017
+          securityContext:
+            - privileged: true
           volumeMounts:
             - name: gluster-persistent-storage
               mountPath: /data/dfs
+            - name: gluster-kernel-control-groups
+              readOnly: true
+              mountPath: /sys/fs/cgroup
         - name: gluster-sidecar
           image: neshte/gluster-k8s-sidecar
           env:
@@ -39,6 +44,9 @@ spec:
         - name: gluster-persistent-storage
           flocker:
             datasetName: flockerglusterrc-4
+        - name: gluster-kernel-control-groups
+          hostPath:
+            path: /sys/fs/cgroup
       nodeSelector:
         node: "2"
     metadata:

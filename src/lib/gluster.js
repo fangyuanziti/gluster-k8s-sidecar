@@ -3,7 +3,6 @@ var Client = require('node-kubernetes-client');
 var config = require('./config');
 var exec = require('child_process').exec;
 var validator = require('validator');
-var SSH = require('simple-ssh');
 var fs = require('fs');
 
 var readToken = fs.readFileSync('/var/run/secrets/kubernetes.io/serviceaccount/token');
@@ -15,36 +14,15 @@ var client = new Client({
   token: readToken
 });
 
-var peerProbeServer = function(host, ip, callback){
+var peerProbeServer = function(podname, ip, callback){
     console.log('being asked to probe ip '+ip);
-    if(validator.isIP(ip) && validator.isIP(host)){
+    if(validator.isIP(ip)){
         console.log('has valid ip '+ip);
-        console.log('has valid host '+host);
-        console.log('will connect by ssh ');
-        var ssh = new SSH({
-            host: host,
-            user: 'root',
-            pass: 'password'
-        });
-        console.log('will send the command by ssh');
-        ssh.exec('gluster peer probe '+ip, {
-            exit: function(code, stdout, stderr){
-                console.log('received exit '+code);
-                ssh.end();
-                if(code == 0){
-                    callback(null, stdout);
-                }else{
-                    callback(code, stderr);
-                }
-            }
-        }).start({
-            success:function(){
-                console.log('successfuly connected');
-            },
-            fail:function(err){
-                console.log('failed to connect');
-                console.log(err);
-                ssh.end();
+        exec("kubectl exec "+podname+" -- gluster peer probe "+ip, function(err, stdout, stderr){
+            if(err){
+                callback(err, stderr);
+            }else{
+                callback(null, stdout);
             }
         });
     }else{
