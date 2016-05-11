@@ -47,5 +47,5 @@ TODO: Instructions for cloning, mounting and watching
 
 ## Inspired in
 
-This sidecar is inspired in a sidecar for mongo with kubernetes
+This sidecar is inspired in a sidecar for mongo on kubernetes
 https://github.com/leportlabs/mongo-k8s-sidecar
