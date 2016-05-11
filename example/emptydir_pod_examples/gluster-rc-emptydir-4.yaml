@@ -28,7 +28,7 @@ spec:
           ports:
             - containerPort: 27017
           securityContext:
-            - privileged: true
+            privileged: true
           volumeMounts:
             - name: gluster-persistent-storage
               mountPath: /data/dfs
