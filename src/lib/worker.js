@@ -20,6 +20,7 @@ var init = function(done) {
       return done(err);
     }
 
+    console.log('this pod ip: '+hostIp);
     hostIp = addr;
 
     done();
@@ -33,7 +34,6 @@ var workloop = function workloop() {
     }
 
     //check ips of pods with label GlusterFS
-    console.log('this pod ip: '+hostIp);
     k8s.getGlusterPods(function(err, pods){
 
         //filter just those that are not my ip
@@ -54,7 +54,7 @@ var workloop = function workloop() {
                     break;
                 }
             }
-            if(!alreadyDetectedPod){
+            if(!alreadyDetectedPod && queriedPods[i].status.podIP !== undefined){
                 podsDetectedNew.push(queriedPods[i]);
                 console.log('new pod detected: '+queriedPods[i].status.podIP);
             }
@@ -80,15 +80,18 @@ var workloop = function workloop() {
 
             //on this container exec gluster peer probe for all pods that are not this one
             var probes = [];
+            var probedips = [];
             for(var i=0; i<podsDetectedNew.length; i+=1){
                 var ip = podsDetectedNew[i].status.podIP;
                 probes.push(function(callback){
                     console.log('probing: '+ip);
                     gluster.peerProbeServer(hostIp, ip, function(err, res){
                         if(!err){
+                            probedips.push(ip);
                             console.log('probed: '+ip);
                             console.log(res);
                         }
+                        callback(err, res);
                     });
                 })
             }
@@ -100,7 +103,16 @@ var workloop = function workloop() {
                     //kubectl replace -f newyaml of endpoints
                     var ips = [];
                     for(var i=0; i<podsDetectedNew.length; i+=1){
-                        ips.push(podsDetectedNew[i].status.podIP);
+                        var podProbed = false;
+                        for(var j=0; j<probedips.length; j+=1){
+                            if(podsDetectedNew[i].status.podIP == probedips[j]){
+                                podProbed = true;
+                                break;
+                            }
+                        }
+                        if(podProbed){
+                            ips.push(podsDetectedNew[i].status.podIP);
+                        }
                     }
                     gluster.setGlusterEndpoints(ips, function(err, res){
                         if(err){
