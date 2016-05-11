@@ -41,7 +41,6 @@ TODO: Instructions for cloning, mounting and watching
 
 ## Still to do
 
-- Node app server change to GlusterFS (right now is mongo)
 - Add tests!
 - Add to circleCi
 - Alter k8s call so that we don't have to filter in memory

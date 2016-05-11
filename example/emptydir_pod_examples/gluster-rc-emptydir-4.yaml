@@ -31,7 +31,7 @@ spec:
             - name: gluster-persistent-storage
               mountPath: /data/dfs
         - name: gluster-sidecar
-          image: gcr.io/swift-hope-776/gluster-k8s-sidecar
+          image: neshte/gluster-k8s-sidecar
           env:
             - name: GLUSTER_SIDECAR_POD_LABELS
               value: "role=gluster,environment=test"
