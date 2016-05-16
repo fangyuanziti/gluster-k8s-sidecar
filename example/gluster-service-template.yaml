@@ -28,45 +28,61 @@ spec:
       name: gluster-port-04
     - port: 24007
       name: gluster-port-05
-    - port: 2049
+    - port: 24008
       name: gluster-port-06
-    - port: 8080
+    - port: 24009
       name: gluster-port-07
-    - port: 6010
+    - port: 24010
       name: gluster-port-08
-    - port: 6011
+    - port: 24011
       name: gluster-port-09
-    - port: 6012
+    - port: 24012
       name: gluster-port-10
-    - port: 38465
+    - port: 24013
       name: gluster-port-11
-    - port: 38466
+    - port: 24014
       name: gluster-port-12
-    - port: 38468
+    - port: 24015
       name: gluster-port-13
-    - port: 38469
+    - port: 2049
       name: gluster-port-14
-    - port: 49152
+    - port: 8080
       name: gluster-port-15
-    - port: 49153
+    - port: 6010
       name: gluster-port-16
-    - port: 49154
+    - port: 6011
       name: gluster-port-17
-    - port: 49156
+    - port: 6012
       name: gluster-port-18
-    - port: 49157
+    - port: 38465
       name: gluster-port-19
-    - port: 49158
+    - port: 38466
       name: gluster-port-20
-    - port: 49159
+    - port: 38468
       name: gluster-port-21
-    - port: 49160
+    - port: 38469
       name: gluster-port-22
-    - port: 49161
+    - port: 49152
       name: gluster-port-23
-    - port: 49162
+    - port: 49153
       name: gluster-port-24
-    - port: 49163
+    - port: 49154
       name: gluster-port-25
+    - port: 49156
+      name: gluster-port-26
+    - port: 49157
+      name: gluster-port-27
+    - port: 49158
+      name: gluster-port-28
+    - port: 49159
+      name: gluster-port-29
+    - port: 49160
+      name: gluster-port-30
+    - port: 49161
+      name: gluster-port-31
+    - port: 49162
+      name: gluster-port-32
+    - port: 49163
+      name: gluster-port-33
   selector:
     name: gluster-node-<num>

@@ -32,7 +32,7 @@ spec:
             privileged: true
           volumeMounts:
             - name: gluster-persistent-storage
-              mountPath: /data/dfs
+              mountPath: /data
             - name: gluster-kernel-control-groups
               readOnly: true
               mountPath: /sys/fs/cgroup

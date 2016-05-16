@@ -29,10 +29,6 @@ ifeq ($(ENV),FLOCKERAWS)
 	-flockerctl --control-service=$(CONTROL_DNS) create -m name=$(VOLUME_PREFIX)-$(NEW_SERVERNODE_NUM) -s $(DISK_SIZE) --node=$(INITIAL_NODE_ID)
 endif
 add-glusternode:
-ifeq ($(CREATE_SERVICE),TRUE)
-	@echo 'Creating Service'
-	-sed -e 's~<num>~$(NEW_SERVERNODE_NUM)~g' gluster-service-template.yaml | kubectl create -f -
-endif
 ifeq ($(ENV),GoogleCloudPlatform)
 	@echo 'Creating Disk'
 	-gcloud compute disks create gluster-persistent-storage-node-$(NEW_SERVERNODE_NUM)-disk --size $(DISK_SIZE) --zone $(ZONE)
@@ -53,6 +49,10 @@ ifeq ($(ENV),FLOCKERAWS)
 	# kubectl delete -f gluster-rc-1.yaml
 	-sed -e 's/<num>/$(NEW_SERVERNODE_NUM)/g' -e 's/VOLUME_PREFIX/$(VOLUME_PREFIX)/g' gluster-controller-flocker-template.yaml | tee gluster-rc-$(NEW_SERVERNODE_NUM).yaml
 	-kubectl create -f gluster-rc-$(NEW_SERVERNODE_NUM).yaml
+endif
+ifeq ($(CREATE_SERVICE),TRUE)
+	@echo 'Creating Service'
+	-sed -e 's~<num>~$(NEW_SERVERNODE_NUM)~g' gluster-service-template.yaml | kubectl create -f -
 endif
 
 delete-glusternode:
