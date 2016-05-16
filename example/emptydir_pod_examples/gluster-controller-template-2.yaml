@@ -27,6 +27,30 @@ spec:
           image: gluster/gluster-centos
           ports:
             - containerPort: 22
+            - containerPort: 111
+            - containerPort: 245
+            - containerPort: 443
+            - containerPort: 24007
+            - containerPort: 2049
+            - containerPort: 8080
+            - containerPort: 6010
+            - containerPort: 6011
+            - containerPort: 6012
+            - containerPort: 38465
+            - containerPort: 38466
+            - containerPort: 38468
+            - containerPort: 38469
+            - containerPort: 49152
+            - containerPort: 49153
+            - containerPort: 49154
+            - containerPort: 49156
+            - containerPort: 49157
+            - containerPort: 49158
+            - containerPort: 49159
+            - containerPort: 49160
+            - containerPort: 49161
+            - containerPort: 49162
+            - containerPort: 49163
           securityContext:
             privileged: true
           volumeMounts:
