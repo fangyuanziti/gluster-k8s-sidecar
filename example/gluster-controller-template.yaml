@@ -22,6 +22,7 @@ spec:
     environment: test
   template:
     spec:
+      hostNetwork: true
       containers:
         - name: gluster-node-<num>
           image: gluster/gluster-centos
