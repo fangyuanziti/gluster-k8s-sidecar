@@ -25,13 +25,21 @@ var getGlusterPods = function getGlusterPods(done) {
     var results = [];
     for (var i in pods) {
       var pod = pods[i];
-      if (podContainsLabels(pod, labels)) {
+      if (podContainsLabels(pod, labels) && podIsReady(pod)) {
         results.push(pod);
       }
     }
 
     done(null, results);
   });
+};
+
+var podIsReady = function podIsReady(pod){
+    if(pod.status.phase === 'Running'){
+        return true;
+    }else{
+        return false;
+    }
 };
 
 var podContainsLabels = function podContainsLabels(pod, labels) {
