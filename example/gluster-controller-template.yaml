@@ -28,6 +28,11 @@ spec:
           ports:
             - containerPort: 22
             - containerPort: 111
+              hostPort: 111
+              protocol: tcp
+            - containerPort: 111
+              hostPort: 111
+              protocol: udp
             - containerPort: 245
             - containerPort: 443
             - containerPort: 24007
@@ -62,6 +67,8 @@ spec:
               hostPort: 38465
             - containerPort: 38466
               hostPort: 38466
+            - containerPort: 38467
+              hostPort: 38467
             - containerPort: 38468
               hostPort: 38468
             - containerPort: 38469
