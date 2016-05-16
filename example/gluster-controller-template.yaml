@@ -32,6 +32,14 @@ spec:
             - containerPort: 245
             - containerPort: 443
             - containerPort: 24007
+            - containerPort: 24008
+            - containerPort: 24009
+            - containerPort: 24010
+            - containerPort: 24011
+            - containerPort: 24012
+            - containerPort: 24013
+            - containerPort: 24014
+            - containerPort: 24015
             - containerPort: 2049
             - containerPort: 8080
             - containerPort: 6010
