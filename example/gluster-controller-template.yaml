@@ -29,10 +29,10 @@ spec:
             - containerPort: 22
             - containerPort: 111
               hostPort: 111
-              protocol: tcp
+              protocol: TCP
             - containerPort: 111
               hostPort: 111
-              protocol: udp
+              protocol: UDP
             - containerPort: 245
             - containerPort: 443
             - containerPort: 24007
