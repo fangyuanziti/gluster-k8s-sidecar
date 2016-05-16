@@ -22,6 +22,7 @@ spec:
     environment: test
   template:
     spec:
+      hostNetwork: true
       containers:
         - name: gluster-node-<num>
           image: neshte/gluster-debian-jessie
@@ -49,25 +50,45 @@ spec:
             - containerPort: 24015
               hostPort: 24015
             - containerPort: 2049
+              hostPort: 2049
             - containerPort: 8080
+              hostPort: 8080
             - containerPort: 6010
+              hostPort: 6010
             - containerPort: 6011
+              hostPort: 6011
             - containerPort: 6012
+              hostPort: 6012
             - containerPort: 38465
+              hostPort: 38465
             - containerPort: 38466
+              hostPort: 38466
             - containerPort: 38468
+              hostPort: 38468
             - containerPort: 38469
+              hostPort: 38469
             - containerPort: 49152
+              hostPort: 49152
             - containerPort: 49153
+              hostPort: 49153
             - containerPort: 49154
+              hostPort: 49154
             - containerPort: 49156
+              hostPort: 49156
             - containerPort: 49157
+              hostPort: 49157
             - containerPort: 49158
+              hostPort: 49158
             - containerPort: 49159
+              hostPort: 49159
             - containerPort: 49160
+              hostPort: 49160
             - containerPort: 49161
+              hostPort: 49161
             - containerPort: 49162
+              hostPort: 49162
             - containerPort: 49163
+              hostPort: 49163
           securityContext:
             privileged: true
           volumeMounts:
