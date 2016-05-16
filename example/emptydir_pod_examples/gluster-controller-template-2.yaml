@@ -27,7 +27,6 @@ spec:
           image: gluster/gluster-centos
           ports:
             - containerPort: 22
-              hostPort: 22
             - containerPort: 111
               hostPort: 111
             - containerPort: 245
