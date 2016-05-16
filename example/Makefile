@@ -1,6 +1,6 @@
 NUM_SERVERNODES=$(shell kubectl get rc -l role=gluster -o template --template='{{ len .items }}')
 NEW_SERVERNODE_NUM=$(shell expr $(NUM_SERVERNODES) + 1 )
-CREATE_SERVICE=FALSE
+CREATE_SERVICE=TRUE
 
 
 # ENV Options
