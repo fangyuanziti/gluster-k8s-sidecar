@@ -22,7 +22,6 @@ spec:
     environment: test
   template:
     spec:
-      hostNetwork: true
       containers:
         - name: gluster-node-<num>
           image: neshte/gluster-debian-jessie
