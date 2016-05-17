@@ -34,19 +34,17 @@ var peerProbeServer = function(hostip, podname, ip, callback){
                     if(err){
                         console.log(err);
                         console.log(stderr);
-                    }else{
-                        cmd = "kubectl exec "+podname+" -- gluster volume start "+process.env.GLUSTERVOLNAME;
-                        console.log(cmd);
-                        exec(cmd, function(err, stdout, stderr){
-                            console.log(stdout);
-                            if(err){
-                                console.log(err);
-                                console.log(stderr);
-                            }else{
-                                callback(null, stdout);
-                            }
-                        });
                     }
+                    cmd = "kubectl exec "+podname+" -- gluster volume start "+process.env.GLUSTERVOLNAME;
+                    console.log(cmd);
+                    exec(cmd, function(err, stdout, stderr){
+                        console.log(stdout);
+                        if(err){
+                            console.log(err);
+                            console.log(stderr);
+                        }
+                        callback(null, stdout);
+                    });
                 });
             }
         });
