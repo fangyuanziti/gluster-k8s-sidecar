@@ -38,6 +38,7 @@ var workloop = function workloop() {
     k8s.getGlusterPods(function(err, pods){
 
         //filter just those that are not my ip
+        var healthyPeeredPods = [];
         var queriedPods = [];
         for(var i=0; i< pods.length; i+=1){
             if(hostIp !== pods[i].status.podIP && pods[i].status.podIP !== undefined){
@@ -106,7 +107,6 @@ var workloop = function workloop() {
                 })
             }
             async.parallel(probes,function(err, results){
-                console.log(results);
                 if(err){
                     console.log(err);
                     finish();
@@ -124,8 +124,23 @@ var workloop = function workloop() {
                         }
                         if(podProbed){
                             ips.push(podsDetectedNew[i].status.podIP);
+                            healthyPeeredPods.push(podsDetectedNew[i]);
                         }
                     }
+                    for(var i=0; i<lastPods.length; i+=1){
+                        var stillAlive = true;
+                        for(var j=0; j<podsObsolete.length; j+=1){
+                            if(lastPods[i].status.podIP == podsObsolete[j].status.podIP){
+                                stillAlive = false;
+                                break;
+                            }
+                        }
+                        if(stillAlive){
+                            ips.push(lastPods[i].status.podIP);
+                            healthyPeeredPods.push(lastPods[i]);
+                        }
+                    }
+                    console.log('healthy cluster ips ', ips);
                     gluster.setGlusterEndpoints(ips, function(err, res){
                         if(err){
                             console.log(err);
@@ -143,7 +158,7 @@ var workloop = function workloop() {
         }
 
         function finish(){
-            lastPods = queriedPods;
+            lastPods = healthyPeeredPods;
             //wait 5 seconds and check again ips
             setTimeout(workloop, loopSleepSeconds * 1000);
         }

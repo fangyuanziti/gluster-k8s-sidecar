@@ -18,11 +18,36 @@ var peerProbeServer = function(podname, ip, callback){
     console.log('being asked to probe ip '+ip);
     if(validator.isIP(ip)){
         console.log('has valid ip '+ip);
-        exec("kubectl exec "+podname+" -- gluster peer probe "+ip, function(err, stdout, stderr){
+        var cmd = "kubectl exec "+podname+" -- gluster peer probe "+ip;
+        console.log(cmd);
+        exec(cmd, function(err, stdout, stderr){
+            console.log(stdout);
             if(err){
+                console.log(ip);
+                console.log(err);
                 callback(err, stderr);
             }else{
-                callback(null, stdout);
+                cmd = "kubectl exec "+podname+" -- gluster volume create "+process.env.GLUSTERVOLNAME+" "+podname+":/data force";
+                console.log(cmd);
+                exec(cmd, function(err, stdout, stderr){
+                    console.log(stdout);
+                    if(err){
+                        console.log(err);
+                        console.log(stderr);
+                    }else{
+                        cmd = "kubectl exec "+podname+" -- gluster volume start "+process.env.GLUSTERVOLNAME;
+                        console.log(cmd);
+                        exec(cmd, function(err, stdout, stderr){
+                            console.log(stdout);
+                            if(err){
+                                console.log(err);
+                                console.log(stderr);
+                            }else{
+                                callback(null, stdout);
+                            }
+                        });
+                    }
+                });
             }
         });
     }else{

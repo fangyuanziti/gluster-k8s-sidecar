@@ -2,6 +2,7 @@ FROM node:latest
 MAINTAINER neshte
 
 #Google Cloud SDK and Kubernetes
+ENV GLUSTERVOLNAME data
 ENV CLOUDSDK_PYTHON_SITEPACKAGES 1
 RUN apt-get update && apt-get install -y -qq --no-install-recommends wget unzip python python-openssl openssh-client && apt-get clean \
     && wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.zip && unzip google-cloud-sdk.zip && rm google-cloud-sdk.zip \
