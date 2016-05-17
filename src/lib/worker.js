@@ -85,6 +85,20 @@ var workloop = function workloop() {
             }
         }
 
+        for(var i=0; i<lastPods.length; i+=1){
+            var stillAlive = true;
+            for(var j=0; j<podsObsolete.length; j+=1){
+                if(lastPods[i].status.podIP == podsObsolete[j].status.podIP){
+                    stillAlive = false;
+                    break;
+                }
+            }
+            if(stillAlive){
+                ips.push(lastPods[i].status.podIP);
+                healthyPeeredPods.push(lastPods[i]);
+            }
+        }
+
         if(podsDetectedNew.length > 0){
 
             //on this container exec gluster peer probe for all pods that are not this one
@@ -125,19 +139,6 @@ var workloop = function workloop() {
                         if(podProbed){
                             ips.push(podsDetectedNew[i].status.podIP);
                             healthyPeeredPods.push(podsDetectedNew[i]);
-                        }
-                    }
-                    for(var i=0; i<lastPods.length; i+=1){
-                        var stillAlive = true;
-                        for(var j=0; j<podsObsolete.length; j+=1){
-                            if(lastPods[i].status.podIP == podsObsolete[j].status.podIP){
-                                stillAlive = false;
-                                break;
-                            }
-                        }
-                        if(stillAlive){
-                            ips.push(lastPods[i].status.podIP);
-                            healthyPeeredPods.push(lastPods[i]);
                         }
                     }
                     console.log('healthy cluster ips ', ips);

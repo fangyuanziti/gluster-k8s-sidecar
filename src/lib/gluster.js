@@ -77,7 +77,12 @@ var setGlusterEndpoints = function setGlusterEndpoints(ips, callback){
                 ]
             });
         }
+        console.log('Request: ',JSON.stringify(body));
         client.endpoints.update(config.glusterClusterName, body, function(err, res, body){
+            console.log('Response: ',JSON.stringify(body));
+            if(err){
+                console.log('Error: ',JSON.stringify(err));
+            }
             callback(err, body);
         });
     }else{
