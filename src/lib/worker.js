@@ -85,6 +85,7 @@ var workloop = function workloop() {
             }
         }
 
+        var ips = [];
         for(var i=0; i<lastPods.length; i+=1){
             var stillAlive = true;
             for(var j=0; j<podsObsolete.length; j+=1){
@@ -127,7 +128,6 @@ var workloop = function workloop() {
                 }else{
                     //build the new endpoint yaml
                     //kubectl replace -f newyaml of endpoints
-                    var ips = [];
                     for(var i=0; i<podsDetectedNew.length; i+=1){
                         var podProbed = false;
                         for(var j=0; j<probedips.length; j+=1){
