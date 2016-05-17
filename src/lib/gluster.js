@@ -14,7 +14,7 @@ var client = new Client({
   token: readToken
 });
 
-var peerProbeServer = function(podname, ip, callback){
+var peerProbeServer = function(hostip, podname, ip, callback){
     console.log('being asked to probe ip '+ip);
     if(validator.isIP(ip)){
         console.log('has valid ip '+ip);
@@ -27,7 +27,7 @@ var peerProbeServer = function(podname, ip, callback){
                 console.log(err);
                 callback(err, stderr);
             }else{
-                cmd = "kubectl exec "+podname+" -- gluster volume create "+process.env.GLUSTERVOLNAME+" "+podname+":/data force";
+                cmd = "kubectl exec "+podname+" -- gluster volume create "+process.env.GLUSTERVOLNAME+" "+hostip+":/data force";
                 console.log(cmd);
                 exec(cmd, function(err, stdout, stderr){
                     console.log(stdout);

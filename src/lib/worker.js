@@ -94,7 +94,7 @@ var workloop = function workloop() {
                 var ip = podsDetectedNew[i].status.podIP;
                 probes.push(function(callback){
                     console.log('probing: '+ip);
-                    gluster.peerProbeServer(thisPodName, ip, function(err, res){
+                    gluster.peerProbeServer(hostIp, thisPodName, ip, function(err, res){
                         if(!err){
                             probedips.push(ip);
                             console.log('probed: '+ip);
