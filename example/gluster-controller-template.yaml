@@ -22,12 +22,14 @@ spec:
     environment: test
   template:
     spec:
+      hostNetwork: true
       containers:
         - name: gluster-node-<num>
           image: neshte/gluster-debian-jessie
           ports:
             - containerPort: 22
             - containerPort: 111
+              hostPort: 111
             - containerPort: 245
             - containerPort: 443
             - containerPort: 24007
