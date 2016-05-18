@@ -16,7 +16,8 @@ There you will also find some helper scripts to test out creating the cluster an
 ### Settings
 
 - GLUSTER_SIDECAR_POD_LABELS  
-  Required: YES  
+  Required: NO  
+  Default: role=gluster,environment=test  
   This should be a be a comma separated list of key values the same as the podTemplate labels. See above for example.
 - GLUSTER_SIDECAR_SLEEP_SECONDS  
   Required: NO  
@@ -34,6 +35,18 @@ There you will also find some helper scripts to test out creating the cluster an
   Required: NO  
   Default: 1  
   This is the cluster port for kubernetes gluster volume mounting.
+- GLUSTER_SIDECAR_VOLUME_NAME  
+  Required: NO  
+  Default: data  
+  This is the gluster volume name.
+- GLUSTER_SIDECAR_BRICK_NAME  
+  Required: NO  
+  Default: data  
+  This is the gluster brick name.
+- GLUSTER_SIDECAR_REPLICATION  
+  Required: NO  
+  Default: 2  
+  This is the replication factor for files on gluster cluster.
 
 ## Debugging
 

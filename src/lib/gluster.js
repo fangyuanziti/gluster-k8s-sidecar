@@ -53,43 +53,6 @@ var peerProbeServer = function(hostip, podname, ip, callback){
     }
 };
 
-var setGlusterEndpoints = function setGlusterEndpoints(ips, callback){
-    if(ips.length > 0){
-        var body = {
-            "kind": "Endpoints",
-            "apiVersion": "v1",
-            "metadata": {
-                "name": "glusterfs-cluster"
-            },
-            "subsets": []
-        };
-        for(var i=0; i<ips.length; i+=1){
-            body.subsets.push({
-                "addresses": [
-                    {
-                        "ip": ips[i]
-                    }
-                ],
-                "ports": [
-                    {
-                        "port":config.glusterClusterPort
-                    }
-                ]
-            });
-        }
-        console.log('Request: ',JSON.stringify(body));
-        client.endpoints.update(config.glusterClusterName, body, function(err, res, body){
-            console.log('Response: ',JSON.stringify(body));
-            if(err){
-                console.log('Error: ',JSON.stringify(err));
-            }
-            callback(err, body);
-        });
-    }else{
-        callback('cannot set empty endpoints');
-    }
-};
-
 module.exports = {
   peerProbeServer: peerProbeServer,
   setGlusterEndpoints: setGlusterEndpoints

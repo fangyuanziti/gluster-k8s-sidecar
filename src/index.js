@@ -1,4 +1,4 @@
-var worker = require('./lib/worker');
+var worker = require('./lib2/worker');
 
 console.log('Starting up gluster-k8s-sidecar');
 

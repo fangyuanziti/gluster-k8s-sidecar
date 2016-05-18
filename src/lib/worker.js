@@ -4,7 +4,7 @@ var config = require('./config');
 var dns = require('dns');
 var async = require('async');
 var os = require('os');
-var exec = exec = require('child_process').exec;
+var exec = require('child_process').exec;
 
 var loopSleepSeconds = config.loopSleepSeconds;
 var unhealthySeconds = config.unhealthySeconds;
@@ -142,15 +142,7 @@ var workloop = function workloop() {
                         }
                     }
                     console.log('healthy cluster ips ', ips);
-                    gluster.setGlusterEndpoints(ips, function(err, res){
-                        if(err){
-                            console.log(err);
-                        }else{
-                            console.log('updated gluster endpoints');
-                            console.log(res);
-                        }
-                        finish();
-                    });
+                    finish();
                 }
             });
 
