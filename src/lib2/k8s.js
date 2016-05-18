@@ -1,5 +1,6 @@
 'use strict';
 
+var config = require('./config');
 var Client = require('node-kubernetes-client');
 var fs = require('fs');
 
