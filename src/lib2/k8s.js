@@ -18,7 +18,7 @@ var createServiceIfNotExists = function(ctx, done){
 
     var serviceexists = false;
     for(var i=0; i<ctx.glusterservices.length; i+=1){
-        if(ctx.glusterservices[i].metadata.name == name){
+        if(ctx.glusterservices[i].metadata.name == ctx.servicename){
             serviceexists = true;
             break;
         }

@@ -10,9 +10,9 @@ var unhealthySeconds = config.unhealthySeconds;
 
 var ctx = {
     k8snamespace:config.k8snamespace,
-    volumename:config.volumename,
-    brickname:config.brickname,
-    replication:config.replication,
+    volumename:config.glusterVolumeName,
+    brickname:config.glusterBrickName,
+    replication:config.glusterReplication,
     labels:config.glusterPodLabelCollection,
     servicename:config.glusterClusterName,
     clusterport:config.glusterClusterPort,
