@@ -150,7 +150,7 @@ var startVolumeIfNotStarted = function(ctx, done){
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
         console.log(stderr);
-        if(!err){
+        if(!err && stderr.indexOf('Volume data does not exist')>-1){
             if(stdout.indexOf('Status: Started')<=-1){
                 var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume start "+ctx.volumename;
                 console.log(cmd);
