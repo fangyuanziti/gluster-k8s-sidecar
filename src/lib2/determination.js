@@ -109,6 +109,8 @@ var readKubernetesContext = function(ctx, done){
                                 var pods = podslist.items;
                                 for(var i=0; i<glusterrcs.length; i+=1){//get pods in order of rc creation
                                     for(var j=0; j<pods.length; j+=1){
+                                        console.log('podcontainslabels', podContainsLabels(pods[j], [{name:glusterrcs[i].spec.selector.name}]));
+                                        console.log('podIsReady', podIsReady(pods[j]));
                                         if(podContainsLabels(pods[j], [{name:glusterrcs[i].spec.selector.name}]) && podIsReady(pods[j])){
                                             glusterpods.push(pods[j]);
                                         }

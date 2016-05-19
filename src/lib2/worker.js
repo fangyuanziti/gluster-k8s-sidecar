@@ -36,6 +36,7 @@ var init = function(done){
 var workloop = function(){
 
     selfawareness.readKubernetesContext(ctx, function(err){
+        console.log(JSON.stringify(ctx));
         if(!err){
             var role = selfawareness.whatRoleShouldITake(ctx);
             switch(role){
