@@ -45,6 +45,8 @@ var createServiceIfNotExists = function(ctx, done){
                 done(err);
             }
         });
+    }else{
+        done(null,null);
     }
 
 };
