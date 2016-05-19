@@ -421,7 +421,7 @@ var addBricksIfMissing = function(ctx, done){
 
 };
 
-var rebalanceNodes = function(ctx, orphanPod, done){
+var rebalanceNodes = function(ctx, done){
 
     var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume rebalance "+ctx.volumename+" start";
     console.log(cmd);
@@ -438,7 +438,6 @@ var rebalanceNodes = function(ctx, orphanPod, done){
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);
-                            console.log(stderr);
                             if(!err){
                                 if(stdout.indexOf('Rebalance completed')>-1){
                                     done(null);
@@ -448,7 +447,12 @@ var rebalanceNodes = function(ctx, orphanPod, done){
                                     },REBALANCE_QUERYSTATUS_INTERVAL);
                                 }
                             }else{
-                                done([err,stderr]);
+                                if(stderr.indexOf('not a distribute volume')>-1){
+                                    done(null);
+                                }else{
+                                    console.log(stderr);
+                                    done([err,stderr]);
+                                }
                             }
                         });
                     }else{
