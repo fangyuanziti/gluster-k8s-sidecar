@@ -244,7 +244,7 @@ var getOrphanPodsInMultiplesOf = function(ctx, done){
                     }
                 }
                 if(completeset === true){
-                    for(var j=0; j<ctx.glusterpods.length; j+=1){
+                    for(var j=0; j<ctx.replication; j+=1){
                         var pod = ctx.glusterpods[i+j];
                         tasks.push(function(cb){
                             var thispod = pod;
