@@ -78,7 +78,7 @@ var readKubernetesContext = function(ctx, done){
 
     async.parallel([function(cb){
         var glusterrcs = [];
-        client.replicationControllers.get(function(err,rcres){
+        client.replicationcontrollers.get(function(err,rcres){
             if(!err){
                 var rclist = rcres[0];
                 if(rclist){
