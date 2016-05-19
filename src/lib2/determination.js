@@ -16,6 +16,8 @@ var client = new Client({
     token: readToken
 });
 
+client.replicationcontrollers = client.createCollection('replicationcontrollers', null, null, null);
+
 var whoAmI = function(ctx, done){
 
     var hostName = os.hostname();
