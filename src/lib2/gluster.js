@@ -119,7 +119,7 @@ var createVolumeIfNotExists = function(ctx, done){
             console.log(stderr);
             if(!err){
                 if(stdout.indexOf('Volume Name: '+ctx.volumename)<=-1){
-                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume create "+ctx.volumename+" replica "+replication+" transport tcp "+this.ip+":/"+brickname+" "+ctx.glusterpods[INDEX_SERVER2].status.podIP+":/"+brickname;
+                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume create "+ctx.volumename+" replica "+ctx.replication+" transport tcp "+this.ip+":/"+ctx.brickname+" "+ctx.glusterpods[INDEX_SERVER2].status.podIP+":/"+ctx.brickname;
                     console.log(cmd);
                     exec(cmd,function(err,stdout,stderr){
                         console.log(stdout);
@@ -149,7 +149,6 @@ var startVolumeIfNotStarted = function(ctx, done){
     console.log(cmd);
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
-        console.log(stderr);
         if(!err){
             if(stdout.indexOf('Status: Started')<=-1){
                 var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume start "+ctx.volumename;
@@ -170,6 +169,7 @@ var startVolumeIfNotStarted = function(ctx, done){
             if(stderr.indexOf('Volume data does not exist')>-1){
                 done(null);
             }else{
+                console.log(stderr);
                 done([err,stderr]);
             }
         }
@@ -350,7 +350,6 @@ var addBricksIfMissing = function(ctx, done){
     console.log(cmd);
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
-        console.log(stderr);
         if(!err){
             var tasks = [];
             for(var i=0; i<ctx.glusterpods.length; i+=ctx.replication){
@@ -414,6 +413,7 @@ var addBricksIfMissing = function(ctx, done){
             if(stderr.indexOf('Volume data does not exist')>-1){
                 done(null,0);
             }else{
+                console.log(stderr);
                 done([err,stderr]);
             }
         }
