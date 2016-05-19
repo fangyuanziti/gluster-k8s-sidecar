@@ -438,6 +438,7 @@ var rebalanceNodes = function(ctx, done){
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);
+                            console.log(stderr);
                             if(!err){
                                 if(stdout.indexOf('Rebalance completed')>-1){
                                     done(null);
@@ -447,12 +448,7 @@ var rebalanceNodes = function(ctx, done){
                                     },REBALANCE_QUERYSTATUS_INTERVAL);
                                 }
                             }else{
-                                if(stderr.indexOf('not a distribute volume')>-1){
-                                    done(null);
-                                }else{
-                                    console.log(stderr);
-                                    done([err,stderr]);
-                                }
+                                done([err,stderr]);
                             }
                         });
                     }else{
@@ -463,7 +459,12 @@ var rebalanceNodes = function(ctx, done){
                 done(stdout);
             }
         }else{
-            done([err,stderr]);
+            if(stderr.indexOf('not a distribute volume')>-1){
+                done(null);
+            }else{
+                console.log(stderr);
+                done([err,stderr]);
+            }
         }
     });
 
