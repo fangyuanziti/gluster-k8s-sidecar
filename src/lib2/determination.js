@@ -27,8 +27,9 @@ var whoAmI = function(ctx, done){
         ctx.this.hostname = hostName;
         client.pods.get(function(err, pods){
             if(!err){
+                console.log(pods);
                 for(var i=0; i<pods.length; i+=1){
-                    if(ctx.this.ip == pods[i].status.podIP){
+                    if(pods[i].status && pods[i].status.podIP && ctx.this.ip == pods[i].status.podIP){
                         ctx.this.podname = pods[i].metadata.name;
                     }
                 }
