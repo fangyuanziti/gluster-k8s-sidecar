@@ -36,13 +36,11 @@ var init = function(done){
 var workloop = function(){
 
     selfawareness.readKubernetesContext(ctx, function(err){
-        console.log(JSON.stringify(ctx));
         if(!err){
             var role = selfawareness.whatRoleShouldITake(ctx);
             switch(role){
                 case 'server1':{
-                    console.log(JSON.stringify(ctx));
-                    k8s.createServiceIfNotExists(ctx, port, labels, function(err){
+                    k8s.createServiceIfNotExists(ctx, function(err){
                         if(!err){
                             gluster.peerProbeServer2IfReady(ctx, function(err){
                                 if(!err){

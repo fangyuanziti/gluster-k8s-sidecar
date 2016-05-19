@@ -13,7 +13,7 @@ var client = new Client({
     token: readToken
 });
 
-var createServiceIfNotExists = function(ctx, port, labels, done){
+var createServiceIfNotExists = function(ctx, done){
 
     var serviceexists = false;
     for(var i=0; i<ctx.glusterservices.length; i+=1){
@@ -32,7 +32,7 @@ var createServiceIfNotExists = function(ctx, port, labels, done){
             spec:{
                 selector:ctx.labels,
                 ports:[{
-                    port:port
+                    port:ctx.clusterport
                 }]
             }
         };
