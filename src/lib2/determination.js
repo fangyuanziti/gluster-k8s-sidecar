@@ -40,7 +40,7 @@ var whoAmI = function(ctx, done){
                     done('kubernetes unexpected response, no pods')
                 }
             }else{
-                done(err);
+                done(['could not get pods',err]);
             }
         });
     });
@@ -120,14 +120,14 @@ var readKubernetesContext = function(ctx, done){
                                 cb('kubernetes unexpected response, no podslist');
                             }
                         }else{
-                            cb(err);
+                            cb(['could not get pods',err]);
                         }
                     });
                 }else{
                     cb('kubernetes unexpected response, no rc list');
                 }
             }else{
-                cb(err);
+                cb(['could not get rcs',err]);
             }
         });
     },function(cb){
@@ -138,7 +138,7 @@ var readKubernetesContext = function(ctx, done){
                     var services = svclist.items;
                     var glusterservices = [];
                     for(var i=0; i<services.length; i+=1){
-                        if(svcSelectorWithLabels(services[i], ctx.labels) && podIsReady(pods[i])){
+                        if(svcSelectorWithLabels(services[i], ctx.labels)){
                             glusterservices.push(services[i]);
                         }
                     }
@@ -148,7 +148,7 @@ var readKubernetesContext = function(ctx, done){
                     cb('kubernetes unexpected response, no svc list');
                 }
             }else{
-                cb(err);
+                cb(['could not get svcs',err]);
             }
         });
     }],function(err,results){
@@ -204,11 +204,11 @@ var rcSelectorWithLabels = function rcSelectorWithLabels(rc, labels) {
 };
 
 var svcSelectorWithLabels = function svcSelectorWithLabels(svc, labels) {
-  if (!rc.spec || !rc.spec.selector) return false;
+  if (!svc.spec || !svc.spec.selector) return false;
 
   for (var i in labels) {
     var kvp = labels[i];
-    if (!rc.spec.selector[kvp.key] || rc.spec.selector[kvp.key] != kvp.value) {
+    if (!svc.spec.selector[kvp.key] || svc.spec.selector[kvp.key] != kvp.value) {
       return false;
     }
   }
