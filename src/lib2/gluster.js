@@ -119,7 +119,7 @@ var createVolumeIfNotExists = function(ctx, done){
             console.log(stderr);
             if(!err){
                 if(stdout.indexOf('Volume Name: '+ctx.volumename)<=-1){
-                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume create "+ctx.volumename+" replica "+ctx.replication+" transport tcp "+this.ip+":/"+ctx.brickname+" "+ctx.glusterpods[INDEX_SERVER2].status.podIP+":/"+ctx.brickname;
+                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume create "+ctx.volumename+" replica "+ctx.replication+" transport tcp "+ctx.this.ip+":/"+ctx.brickname+" "+ctx.glusterpods[INDEX_SERVER2].status.podIP+":/"+ctx.brickname;
                     console.log(cmd);
                     exec(cmd,function(err,stdout,stderr){
                         console.log(stdout);
