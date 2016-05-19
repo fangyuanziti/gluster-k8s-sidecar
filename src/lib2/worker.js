@@ -41,14 +41,19 @@ var workloop = function(){
             var role = selfawareness.whatRoleShouldITake(ctx);
             switch(role){
                 case 'server1':{
+                    console.log('k8s.createServiceIfNotExists');
                     k8s.createServiceIfNotExists(ctx, function(err){
                         if(!err){
+                            console.log('gluster.peerProbeServer2IfReady');
                             gluster.peerProbeServer2IfReady(ctx, function(err){
                                 if(!err){
+                                    console.log('gluster.createVolumeIfNotExists');
                                     gluster.createVolumeIfNotExists(ctx, function(err){
                                         if(!err){
+                                            console.log('gluster.startVolumeIfNotStarted');
                                             gluster.startVolumeIfNotStarted(ctx, function(err){
                                                 if(!err){
+                                                    console.log('gluster.expandIfNecessary');
                                                     gluster.expandIfNecessary(ctx, function(err){
                                                         if(!err){
                                                             finish();
