@@ -23,7 +23,7 @@ var peerProbeServer2IfReady = function(ctx, done){
                 dns.reverse(ctx.glusterpods[INDEX_SERVER2].status.podIP,function(err,domains){
                     if(!err){
                         for(var i=0; i<domains.length; i++){
-                            checks.push(domain);
+                            checks.push(domains[i]);
                         }
                     }
                     for(var i=0; i<checks.length; i++){
@@ -73,7 +73,7 @@ var peerProbeServer1 = function(ctx, done){
                 dns.reverse(ctx.glusterpods[INDEX_SERVER1].status.podIP,function(err,domains){
                     if(!err){
                         for(var i=0; i<domains.length; i++){
-                            checks.push(domain);
+                            checks.push(domains[i]);
                         }
                     }
                     for(var i=0; i<checks.length; i++){
