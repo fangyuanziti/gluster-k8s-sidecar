@@ -198,15 +198,19 @@ var expandIfNecessary = function(ctx, done){
             }
             async.parallel(tasks, function(err,results){
                 if(!err){
-                    addBricksIfMissing(ctx, function(err){
+                    addBricksIfMissing(ctx, function(err,numbricksadded){
                         if(!err){
-                            rebalanceNodes(ctx, function(err){
-                                if(!err){
-                                    done(null);
-                                }else{
-                                    done(err);
-                                }
-                            });
+                            if(numbricksadded > 0){
+                                rebalanceNodes(ctx, function(err){
+                                    if(!err){
+                                        done(null);
+                                    }else{
+                                        done(err);
+                                    }
+                                });
+                            }else{
+                                done(null);
+                            }
                         }else{
                             done(err);
                         }
@@ -401,13 +405,17 @@ var addBricksIfMissing = function(ctx, done){
             }
             async.parallel(tasks, function(err, results){
                 if(!err){
-                    done(null);
+                    done(null,results.length);
                 }else{
                     done([err,results]);
                 }
             });
         }else{
-            done([err,stderr]);
+            if(stderr.indexOf('Volume data does not exist')>-1){
+                done(null,0);
+            }else{
+                done([err,stderr]);
+            }
         }
     });
 
