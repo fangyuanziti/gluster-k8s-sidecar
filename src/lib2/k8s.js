@@ -31,7 +31,7 @@ var createServiceIfNotExists = function(ctx, done){
                 name:ctx.servicename
             },
             spec:{
-                selector:ctx.labels,
+                selector:keyValsToObj(ctx.labels),
                 ports:[{
                     port:ctx.clusterport
                 }]
@@ -48,6 +48,14 @@ var createServiceIfNotExists = function(ctx, done){
     }
 
 };
+
+function keyValsToObj(kvs){
+    var obj = {};
+    for(var i=0; i<kvs.length; i+=1){
+        obj[kvs[i].key] = kvs[i].value;
+    }
+    return obj;
+}
 
 module.exports = {
     createServiceIfNotExists:createServiceIfNotExists
