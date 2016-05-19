@@ -25,15 +25,20 @@ var whoAmI = function(ctx, done){
         }
         ctx.this.ip = addr;
         ctx.this.hostname = hostName;
-        client.pods.get(function(err, pods){
+        client.pods.get(function(err, podsres){
             if(!err){
-                console.log(pods);
-                for(var i=0; i<pods.length; i+=1){
-                    if(pods[i].status && pods[i].status.podIP && ctx.this.ip == pods[i].status.podIP){
-                        ctx.this.podname = pods[i].metadata.name;
+                var podlist = podsres[0];
+                if(podlist){
+                    var pods = podlist.items;
+                    for(var i=0; i<pods.length; i+=1){
+                        if(pods[i].status && pods[i].status.podIP && ctx.this.ip == pods[i].status.podIP){
+                            ctx.this.podname = pods[i].metadata.name;
+                        }
                     }
+                    done(null);
+                }else{
+                    done('kubernetes unexpected response, no pods')
                 }
-                done(null);
             }else{
                 done(err);
             }
@@ -73,57 +78,75 @@ var readKubernetesContext = function(ctx, done){
 
     async.parallel([function(cb){
         var glusterrcs = [];
-        client.replicationControllers.get(function(err,rcs){
+        client.replicationControllers.get(function(err,rcres){
             if(!err){
-                for(var i=0; i<rcs.length; i+=1){
-                    if(rcSelectorWithLabels(rcs[i], ctx.labels) && rcIsReady(rcs[i])){
-                        glusterrcs.push(rcs[i]);
-                    }
-                }
-                //base criteria in resource controller creation time
-                glusterrcs.sort(function(a,b){
-                    var ats = (new Date(a.metadata.creationTimestamp)).getTime();
-                    var bts = (new Date(b.metadata.creationTimestamp)).getTime();
-                    if(ats < bts){
-                        return -1;
-                    }else if(ats > bts){
-                        return 1;
-                    }else{
-                        return 0;
-                    }
-                });
-                ctx.glusterrcs = glusterrcs;
-                var glusterpods = [];
-                client.pods.get(function(err,pods){
-                    if(!err){
-                        for(var i=0; i<glusterrcs.length; i+=1){//get pods in order of rc creation
-                            for(var j=0; j<pods.length; j+=1){
-                                if(podContainsLabels(pods[j], [{name:glusterrcs[i].spec.selector.name}]) && podIsReady(pods[j])){
-                                    glusterpods.push(pods[j]);
-                                }
-                            }
+                var rclist = rcres[0];
+                if(rclist){
+                    var rcs = rclist.items;
+                    for(var i=0; i<rcs.length; i+=1){
+                        if(rcSelectorWithLabels(rcs[i], ctx.labels) && rcIsReady(rcs[i])){
+                            glusterrcs.push(rcs[i]);
                         }
-                        ctx.glusterpods = glusterpods;
-                        cb(null);
-                    }else{
-                        cb(err);
                     }
-                });
+                    //base criteria in resource controller creation time
+                    glusterrcs.sort(function(a,b){
+                        var ats = (new Date(a.metadata.creationTimestamp)).getTime();
+                        var bts = (new Date(b.metadata.creationTimestamp)).getTime();
+                        if(ats < bts){
+                            return -1;
+                        }else if(ats > bts){
+                            return 1;
+                        }else{
+                            return 0;
+                        }
+                    });
+                    ctx.glusterrcs = glusterrcs;
+                    var glusterpods = [];
+                    client.pods.get(function(err,podsres){
+                        if(!err){
+                            var podslist = podsres[0];
+                            if(podslist){
+                                var pods = podslist.items;
+                                for(var i=0; i<glusterrcs.length; i+=1){//get pods in order of rc creation
+                                    for(var j=0; j<pods.length; j+=1){
+                                        if(podContainsLabels(pods[j], [{name:glusterrcs[i].spec.selector.name}]) && podIsReady(pods[j])){
+                                            glusterpods.push(pods[j]);
+                                        }
+                                    }
+                                }
+                                ctx.glusterpods = glusterpods;
+                                cb(null);
+                            }else{
+                                cb('kubernetes unexpected response, no podslist');
+                            }
+                        }else{
+                            cb(err);
+                        }
+                    });
+                }else{
+                    cb('kubernetes unexpected response, no rc list');
+                }
             }else{
                 cb(err);
             }
         });
     },function(cb){
-        client.services.get(function(err,services){
+        client.services.get(function(err,svcres){
             if(!err){
-                var glusterservices = [];
-                for(var i=0; i<services.length; i+=1){
-                    if(svcSelectorWithLabels(services[i], ctx.labels) && podIsReady(pods[i])){
-                        glusterservices.push(services[i]);
+                var svclist = svcres[0];
+                if(svclist){
+                    var services = svclist.items;
+                    var glusterservices = [];
+                    for(var i=0; i<services.length; i+=1){
+                        if(svcSelectorWithLabels(services[i], ctx.labels) && podIsReady(pods[i])){
+                            glusterservices.push(services[i]);
+                        }
                     }
+                    ctx.glusterservices = glusterservices;
+                    cb(null);
+                }else{
+                    cb('kubernetes unexpected response, no svc list');
                 }
-                ctx.glusterservices = glusterservices;
-                cb(null);
             }else{
                 cb(err);
             }
