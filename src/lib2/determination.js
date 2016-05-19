@@ -16,8 +16,6 @@ var client = new Client({
     token: readToken
 });
 
-client.replicationcontrollers = client.createCollection('replicationcontrollers', null, null, null);
-
 var whoAmI = function(ctx, done){
 
     var hostName = os.hostname();
@@ -80,7 +78,7 @@ var readKubernetesContext = function(ctx, done){
 
     async.parallel([function(cb){
         var glusterrcs = [];
-        client.replicationcontrollers.get(function(err,rcres){
+        client.replicationControllers.get(function(err,rcres){
             if(!err){
                 var rclist = rcres[0];
                 if(rclist){
