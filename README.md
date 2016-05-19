@@ -47,6 +47,10 @@ There you will also find some helper scripts to test out creating the cluster an
   Required: NO  
   Default: 2  
   This is the replication factor for files on gluster cluster.
+- GLUSTER_SIDECAR_K8SNAMESPACE  
+  Required: NO  
+  Default: default  
+  This is the namespace in which this sidecar will run.
 
 ## Debugging
 

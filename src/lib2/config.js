@@ -31,6 +31,7 @@ module.exports = {
   glusterVolumeName: process.env.GLUSTER_SIDECAR_VOLUME_NAME || 'data',
   glusterBrickName: process.env.GLUSTER_SIDECAR_BRICK_NAME || 'data',
   glusterReplication: process.env.GLUSTER_SIDECAR_REPLICATION || 2,
+  k8snamespace: process.env.GLUSTER_SIDECAR_K8SNAMESPACE || 'default',
   env: process.env.NODE_ENV || 'local',
   glusterPodLabels: getGlusterPodLabels(),
   glusterPodLabelCollection: getGlusterPodLabelCollection(),

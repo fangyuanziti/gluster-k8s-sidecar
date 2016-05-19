@@ -9,6 +9,7 @@ var loopSleepSeconds = config.loopSleepSeconds;
 var unhealthySeconds = config.unhealthySeconds;
 
 var ctx = {
+    k8snamespace:config.k8snamespace,
     volumename:config.volumename,
     brickname:config.brickname,
     replication:config.replication,

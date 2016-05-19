@@ -13,6 +13,7 @@ var client = new Client({
     host:  config.kubernetesROServiceAddress,
     protocol: 'https',
     version: 'v1',
+    namespace: config.k8snamespace,
     token: readToken
 });
 
