@@ -109,7 +109,7 @@ var readKubernetesContext = function(ctx, done){
                                 var pods = podslist.items;
                                 for(var i=0; i<glusterrcs.length; i+=1){//get pods in order of rc creation
                                     for(var j=0; j<pods.length; j+=1){
-                                        if(podContainsLabels(pods[j], [{name:glusterrcs[i].spec.selector.name}]) && podIsReady(pods[j])){
+                                        if(podContainsLabels(pods[j], [{key:"name",value:glusterrcs[i].spec.selector.name}]) && podIsReady(pods[j])){
                                             glusterpods.push(pods[j]);
                                         }
                                     }
@@ -170,8 +170,6 @@ var podIsReady = function podIsReady(pod){
 };
 
 var podContainsLabels = function podContainsLabels(pod, labels) {
-  console.log(labels);
-  console.log(pod);
   if (!pod.metadata || !pod.metadata.labels) return false;
 
   for (var i in labels) {
