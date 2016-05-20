@@ -1,4 +1,4 @@
-var worker = require('./lib2/worker');
+var worker = require('./lib2/worker');//lib deprecated
 
 console.log('Starting up gluster-k8s-sidecar');
 

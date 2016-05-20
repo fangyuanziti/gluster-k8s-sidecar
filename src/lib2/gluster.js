@@ -8,6 +8,76 @@ const INDEX_SERVER2 = 1;
 const REBALANCE_QUERYSTATUS_INTERVAL = 5;
 const REBALANCE_QUERYSTATUS_MAXQUERIES = 25;
 
+var checkStatusOfPeersAndMakeSureEverythingIsRight = function(ctx, done){
+
+    if(ctx.glusterpods.length > 1){
+        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer status";
+        console.log(cmd);
+        exec(cmd,function(err,stdout,stderr){
+            console.log(stdout);
+            console.log(stderr);
+            if(!err){
+                var peerInfo = parsePeerStatuses(stdout);
+                console.log('parsed peers: ',peerInfo);
+                var tasks = [];
+                for(var i=0; i<peerInfo.length; i+=1){
+                    if(peerInfo[i]['State'].indexOf('Disconnected')>-1 || peerInfo[i]['State'].indexOf('Rejected')>-1){
+                        (function(peer){
+                            tasks.push(function(cb){
+                                selfheal.tryToRecoverPeer(ctx, peer, peerInfo, function(err){
+                                    if(!err){
+                                        cb(null,null);
+                                    }else{
+                                        cb(err,null);
+                                    }
+                                });
+                            });
+                        })(peerInfo[i]);
+                    }
+                }
+                if(tasks.length > 0){
+                    async.series(tasks,function(err, results){
+                        if(!err){
+                            done(null);
+                        }else{
+                            done(err);
+                        }
+                    });
+                }else{
+                    done(null);
+                }
+            }else{
+                done([err,stderr]);
+            }
+        });
+    }else{
+        done(null);
+    }
+
+};
+
+var parsePeerStatuses = function(stdout){
+
+    var parts = stdout.split("\nHostname: ");
+    var peers = [];
+    for(var i=0; i<parts.length; i+=1){
+        var part = "Hostname: "+parts[i];
+        var lines = part.split("\n");
+        var obj = {};
+        for(var j=0; j<lines.length; j+=1){
+            var keyval = lines.split(": ");
+            if(keyval.length == 2){
+                obj[keyval[0].trim()] = keyval[1].trim();
+            }
+        }
+        if(obj['Hostname'] && obj['Uuid'] && obj['State']){
+            peers.push(obj);
+        }
+    }
+    return peers;
+
+};
+
 //Purpose: to create trusted storage pool
 var peerProbeServer2IfReady = function(ctx, done){
 
@@ -483,6 +553,7 @@ var rebalanceNodes = function(ctx, done){
 };
 
 module.exports = {
+    checkStatusOfPeersAndMakeSureEverythingIsRight:checkStatusOfPeersAndMakeSureEverythingIsRight,
     peerProbeServer2IfReady:peerProbeServer2IfReady,
     createVolumeIfNotExists:createVolumeIfNotExists,
     startVolumeIfNotStarted:startVolumeIfNotStarted,

@@ -43,15 +43,21 @@ var workloop = function(){
                 case 'server1':{
                     k8s.createServiceIfNotExists(ctx, function(err,svc){
                         if(!err){
-                            gluster.peerProbeServer2IfReady(ctx, function(err){
+                            gluster.checkStatusOfPeersAndMakeSureEverythingIsRight(ctx, function(err){
                                 if(!err){
-                                    gluster.createVolumeIfNotExists(ctx, function(err){
+                                    gluster.peerProbeServer2IfReady(ctx, function(err){
                                         if(!err){
-                                            gluster.startVolumeIfNotStarted(ctx, function(err){
+                                            gluster.createVolumeIfNotExists(ctx, function(err){
                                                 if(!err){
-                                                    gluster.expandIfNecessary(ctx, function(err){
+                                                    gluster.startVolumeIfNotStarted(ctx, function(err){
                                                         if(!err){
-                                                            finish();
+                                                            gluster.expandIfNecessary(ctx, function(err){
+                                                                if(!err){
+                                                                    finish();
+                                                                }else{
+                                                                    finish(err);
+                                                                }
+                                                            });
                                                         }else{
                                                             finish(err);
                                                         }

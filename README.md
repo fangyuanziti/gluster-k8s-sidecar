@@ -58,9 +58,13 @@ TODO: Instructions for cloning, mounting and watching
 
 ## Still to do
 
+- Test performance of gluster (with more than 100 nodes or something like that)
+- Test real cases of failure and autorecovery
+- Allow to add/remove any pod number, not just the last one
+- Add support for fully distributed non-replicated cluster
+- Parametrize also on Makefile to avoid the need to change the rc-template and svc-template manually
 - Add tests!
 - Add to circleCi
-- Alter k8s call so that we don't have to filter in memory
 
 ## Inspired in
 
