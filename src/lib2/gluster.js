@@ -361,7 +361,7 @@ var addBricksIfMissing = function(ctx, done){
                     }
                 }
                 if(completeset === true){
-                    for(var j=0; j<ctx.glusterpods.length; j+=1){
+                    for(var j=0; j<ctx.replication; j+=1){
                         var ip = ctx.glusterpods[i+j].status.podIP;
                         tasks.push(function(cb){
                             var thisip = ip;
