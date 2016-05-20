@@ -402,7 +402,7 @@ var addBricksIfMissing = function(ctx, done){
                     }
                     if(bricks.length > 0){
                         var brickslist = bricks.join(' ');
-                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume add-brick "+ctx.volumename+" replica "+ctx.replication+" "+bricklist;
+                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume add-brick "+ctx.volumename+" replica "+ctx.replication+" "+brickslist;
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);
