@@ -65,7 +65,7 @@ var parsePeerStatuses = function(stdout){
         var lines = part.split("\n");
         var obj = {};
         for(var j=0; j<lines.length; j+=1){
-            var keyval = lines.split(": ");
+            var keyval = lines[i].split(": ");
             if(keyval.length == 2){
                 obj[keyval[0].trim()] = keyval[1].trim();
             }
