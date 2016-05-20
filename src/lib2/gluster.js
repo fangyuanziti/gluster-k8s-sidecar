@@ -309,7 +309,7 @@ var probePod = function(ctx, orphanPod, done){
                 dns.reverse(orphanPod.status.podIP,function(err,domains){
                     if(!err){
                         for(var i=0; i<domains.length; i++){
-                            checks.push(domain);
+                            checks.push(domains[i]);
                         }
                     }
                     for(var i=0; i<checks.length; i++){
