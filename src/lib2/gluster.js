@@ -409,13 +409,13 @@ var addBricksIfMissing = function(ctx, done){
                             console.log(stdout);
                             console.log(stderr);
                             if(!err){
-                                done(null,brickstocreate.length);
+                                done(null,bricks.length);
                             }else{
                                 done([err,stderr]);
                             }
                         });
                     }else{
-                        done(null,brickstocreate.length);
+                        done(null,bricks.length);
                     }
                 }else{
                     done([err,results]);
@@ -452,7 +452,7 @@ var rebalanceNodes = function(ctx, done){
                             console.log(stdout);
                             console.log(stderr);
                             if(!err){
-                                if(stdout.indexOf('Rebalance completed')>-1){
+                                if(stdout.indexOf('success')>-1){
                                     done(null);
                                 }else{
                                     setTimeout(function(){
