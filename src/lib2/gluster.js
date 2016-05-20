@@ -378,17 +378,7 @@ var addBricksIfMissing = function(ctx, done){
                                         }
                                     }
                                     if(!brickexists){
-                                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume add-brick "+ctx.volumename+" "+thisip+":/"+ctx.brickname+"/brick";
-                                        console.log(cmd);
-                                        exec(cmd,function(err,stdout,stderr){
-                                            console.log(stdout);
-                                            console.log(stderr);
-                                            if(!err){
-                                                cb(null,null);
-                                            }else{
-                                                cb([err,stderr]);
-                                            }
-                                        });
+                                        cb(null,thisip+":/"+ctx.brickname+"/brick");
                                     }else{
                                         cb(null,null);
                                     }
@@ -402,9 +392,30 @@ var addBricksIfMissing = function(ctx, done){
                     console.log('there are '+(ctx.glusterpods.length-i)+' gluster servers needing to be multiples of replication '+ctx.replication);
                 }
             }
-            async.parallel(tasks, function(err, results){
+            async.parallel(tasks, function(err, brickstocreate){
                 if(!err){
-                    done(null,results.length);
+                    var bricks = []
+                    for(var i=0; i<brickstocreate.length; i+=1){
+                        if(brickstocreate[i] != null){
+                            bricks.push();
+                        }
+                    }
+                    if(bricks.length > 0){
+                        var brickslist = bricks.join(' ');
+                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume add-brick "+ctx.volumename+" replica "+ctx.replication+" "+bricklist;
+                        console.log(cmd);
+                        exec(cmd,function(err,stdout,stderr){
+                            console.log(stdout);
+                            console.log(stderr);
+                            if(!err){
+                                done(null,results.length);
+                            }else{
+                                done([err,stderr]);
+                            }
+                        });
+                    }else{
+                        done(null,results.length);
+                    }
                 }else{
                     done([err,results]);
                 }
