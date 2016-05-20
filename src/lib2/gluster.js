@@ -362,31 +362,31 @@ var addBricksIfMissing = function(ctx, done){
                 }
                 if(completeset === true){
                     for(var j=0; j<ctx.replication; j+=1){
-                        var ip = ctx.glusterpods[i+j].status.podIP;
-                        tasks.push(function(cb){
-                            var thisip = ip;
-                            dns.reverse(thisip, function(err,domains){
-                                if(!err){
-                                    var brickexists = false;
-                                    if(stdout.indexOf(thisip)>-1){
-                                        brickexists = true;
-                                    }
-                                    for(var k=0; k<domains.length; k+=1){
-                                        if(stdout.indexOf(domains[k])>-1){
+                        (function(ip){
+                            tasks.push(function(cb){
+                                dns.reverse(ip, function(err,domains){
+                                    if(!err){
+                                        var brickexists = false;
+                                        if(stdout.indexOf(ip)>-1){
                                             brickexists = true;
-                                            break;
                                         }
-                                    }
-                                    if(!brickexists){
-                                        cb(null,thisip+":/"+ctx.brickname+"/brick");
+                                        for(var k=0; k<domains.length; k+=1){
+                                            if(stdout.indexOf(domains[k])>-1){
+                                                brickexists = true;
+                                                break;
+                                            }
+                                        }
+                                        if(!brickexists){
+                                            cb(null,ip+":/"+ctx.brickname+"/brick");
+                                        }else{
+                                            cb(null,null);
+                                        }
                                     }else{
-                                        cb(null,null);
+                                        cb(err,null);
                                     }
-                                }else{
-                                    cb(err,null);
-                                }
+                                });
                             });
-                        });
+                        })(ctx.glusterpods[i+j].status.podIP);
                     }
                 }else{
                     console.log('there are '+(ctx.glusterpods.length-i)+' gluster servers needing to be multiples of replication '+ctx.replication);
