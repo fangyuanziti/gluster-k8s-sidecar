@@ -397,7 +397,7 @@ var addBricksIfMissing = function(ctx, done){
                     var bricks = []
                     for(var i=0; i<brickstocreate.length; i+=1){
                         if(brickstocreate[i] != null){
-                            bricks.push();
+                            bricks.push(brickstocreate[i]);
                         }
                     }
                     if(bricks.length > 0){
