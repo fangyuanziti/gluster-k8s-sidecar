@@ -185,16 +185,17 @@ var expandIfNecessary = function(ctx, done){
         if(!err){
             var tasks = [];
             for(var i=0; i<orphanPods.length; i+=1){
-                var orphanPod = orphanPods[i];
-                tasks.push(function(cb){
-                    probePod(ctx, orphanPod, function(err){
-                        if(!err){
-                            cb(null,null);
-                        }else{
-                            cb(err,null);
-                        }
+                (function(orphanPod){
+                    tasks.push(function(cb){
+                        probePod(ctx, orphanPod, function(err){
+                            if(!err){
+                                cb(null,null);
+                            }else{
+                                cb(err,null);
+                            }
+                        });
                     });
-                });
+                })(orphanPods[i]);
             }
             async.parallel(tasks, function(err,results){
                 if(!err){
@@ -245,31 +246,31 @@ var getOrphanPodsInMultiplesOf = function(ctx, done){
                 }
                 if(completeset === true){
                     for(var j=0; j<ctx.replication; j+=1){
-                        var pod = ctx.glusterpods[i+j];
-                        tasks.push(function(cb){
-                            var thispod = pod;
-                            dns.reverse(thispod.status.podIP, function(err,domains){
-                                if(!err){
-                                    var peerconnected = false;
-                                    if(stdout.indexOf(thispod.status.podIP)>-1){
-                                        peerconnected = true;
-                                    }
-                                    for(var k=0; k<domains.length; k+=1){
-                                        if(stdout.indexOf(domains[k])>-1){
+                        (function(pod){
+                            tasks.push(function(cb){
+                                dns.reverse(pod.status.podIP, function(err,domains){
+                                    if(!err){
+                                        var peerconnected = false;
+                                        if(stdout.indexOf(pod.status.podIP)>-1){
                                             peerconnected = true;
-                                            break;
                                         }
-                                    }
-                                    if(!peerconnected){
-                                        cb(null,thispod);
+                                        for(var k=0; k<domains.length; k+=1){
+                                            if(stdout.indexOf(domains[k])>-1){
+                                                peerconnected = true;
+                                                break;
+                                            }
+                                        }
+                                        if(!peerconnected){
+                                            cb(null,pod);
+                                        }else{
+                                            cb(null,null);
+                                        }
                                     }else{
-                                        cb(null,null);
+                                        cb(err,null);
                                     }
-                                }else{
-                                    cb(err,null);
-                                }
+                                });
                             });
-                        });
+                        })(ctx.glusterpods[i+j]);
                     }
                 }else{
                     console.log('there are '+(ctx.glusterpods.length-i)+' gluster servers needing to be multiples of replication '+ctx.replication);
