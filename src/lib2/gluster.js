@@ -408,13 +408,13 @@ var addBricksIfMissing = function(ctx, done){
                             console.log(stdout);
                             console.log(stderr);
                             if(!err){
-                                done(null,results.length);
+                                done(null,brickstocreate.length);
                             }else{
                                 done([err,stderr]);
                             }
                         });
                     }else{
-                        done(null,results.length);
+                        done(null,brickstocreate.length);
                     }
                 }else{
                     done([err,results]);
