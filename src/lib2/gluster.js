@@ -58,11 +58,14 @@ var checkStatusOfPeersAndMakeSureEverythingIsRight = function(ctx, done){
 
 var parsePeerStatuses = function(stdout){
 
+    console.log('stdout',stdout);
     var parts = stdout.split("\nHostname: ");
+    console.log('parts',parts);
     var peers = [];
     for(var i=0; i<parts.length; i+=1){
         var part = "Hostname: "+parts[i];
         var lines = part.split("\n");
+        console.log('lines',lines);
         var obj = {};
         for(var j=0; j<lines.length; j+=1){
             var keyval = lines[i].split(": ");
