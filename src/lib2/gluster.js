@@ -1,5 +1,6 @@
 'use strict';
 
+var selfheal = require('./selfheal');
 var async = require('async');
 var exec = require('child_process').exec;
 var dns = require('dns');
