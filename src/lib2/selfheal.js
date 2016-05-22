@@ -54,7 +54,7 @@ var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
         console.log(stdout);
         console.log(stderr);
         if(!err){
-            var cmd = "kubectl exec "+newpod.metadata.name+" -- UUID="+badpeer['Uuid']+' sed  -i "s/\\(UUID\\)=\\(.*\\)/\\1=$UUID/g" /var/lib/glusterd/glusterd.info && cat /var/lib/glusterd/glusterd.info';
+            var cmd = "kubectl exec "+newpod.metadata.name+" -- export UUID="+badpeer['Uuid']+' && sed -i "s/\\(UUID\\)=\\(.*\\)/\\1=$UUID/g" /var/lib/glusterd/glusterd.info && cat /var/lib/glusterd/glusterd.info';
             console.log(cmd);
             exec(cmd,function(err,stdout,stderr){
                 console.log(stdout);
