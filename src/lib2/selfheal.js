@@ -148,7 +148,7 @@ var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
                                                                                                     console.log(stdout);
                                                                                                     console.log(stderr);
                                                                                                     if(!err){
-                                                                                                        var cmd = "kubectl exec "+ctx.this.podname+" -- service glusterfs-server restart";
+                                                                                                        var cmd = "kubectl exec "+newpod.metadata.name+" -- service glusterfs-server restart";
                                                                                                         console.log(cmd);
                                                                                                         exec(cmd,function(err,stdout,stderr){
                                                                                                             console.log(stdout);
