@@ -118,7 +118,7 @@ var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
                                                                         console.log(stdout);
                                                                         console.log(stderr);
                                                                         if(!err){
-                                                                            var cmd = "kubectl exec "+newpod.metadata.name+" -- yes | gluster volume sync "+ctx.this.ip+" all";
+                                                                            var cmd = "kubectl exec "+newpod.metadata.name+" -- bash -c 'yes | gluster volume sync "+ctx.this.ip+" all'";
                                                                             console.log(cmd);
                                                                             exec(cmd,function(err,stdout,stderr){
                                                                                 console.log(stdout);
