@@ -5,6 +5,9 @@ resilient to the various conditions both gluster and kubernetes can find themsel
 
 ## How to use it
 
+There is an article here explaining how to use this here:
+https://medium.com/@jaime_ecom/glusterfs-cluster-with-kubernetes-c09725d69900#.18m72xv4k
+
 The docker image is hosted on docker hub and can be found here:  
 https://hub.docker.com/r/neshte/gluster-k8s-sidecar/
 
@@ -54,7 +57,10 @@ There you will also find some helper scripts to test out creating the cluster an
 
 ## Debugging
 
-TODO: Instructions for cloning, mounting and watching
+If you follow the instructions on article:
+https://medium.com/@jaime_ecom/glusterfs-cluster-with-kubernetes-c09725d69900#.18m72xv4k
+
+On the sidecar of the first node you create, you will see your logs for debugging
 
 ## Still to do
 
