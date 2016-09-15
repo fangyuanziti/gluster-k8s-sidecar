@@ -48,7 +48,7 @@ var workloop = function(){
                                     gluster.peerProbeServer2IfReady(ctx, function(err){
                                         if(!err){
                                             gluster.createVolumeIfNotExists(ctx, function(err){
-                                                if(!err){
+                                                if(!err || JSON.stringify(err).indexOf('is already part of a volume') > -1){
                                                     gluster.startVolumeIfNotStarted(ctx, function(err){
                                                         if(!err){
                                                             gluster.expandIfNecessary(ctx, function(err){
