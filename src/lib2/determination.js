@@ -184,7 +184,7 @@ var podContainsLabels = function podContainsLabels(pod, labels) {
 };
 
 var rcIsReady = function rcIsReady(rc){
-    if(rc.status.replicas == 1){
+    if(rc.status.replicas >= 1){
         return true;
     }else{
         return false;

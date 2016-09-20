@@ -4,15 +4,18 @@ var selfheal = require('./selfheal');
 var async = require('async');
 var exec = require('child_process').exec;
 var dns = require('dns');
+var config = require('./config');
 const INDEX_SERVER1 = 0;
 const INDEX_SERVER2 = 1;
 const REBALANCE_QUERYSTATUS_INTERVAL = 5;
 const REBALANCE_QUERYSTATUS_MAXQUERIES = 25;
 
+var kubeCmd = require('./common').kubeCmd;
+
 var checkStatusOfPeersAndMakeSureEverythingIsRight = function(ctx, done){
 
     if(ctx.glusterpods.length > 1){
-        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer status";
+        var cmd = kubeCmd(ctx.this.podname, "gluster peer status");
         console.log(cmd);
         exec(cmd,function(err,stdout,stderr){
             console.log(stdout);
@@ -83,7 +86,7 @@ var parsePeerStatuses = function(stdout){
 var peerProbeServer2IfReady = function(ctx, done){
 
     if(typeof ctx.glusterpods[INDEX_SERVER2] !== 'undefined'){
-        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer status";
+        var cmd = kubeCmd(ctx.this.podname, "gluster peer status");
         console.log(cmd);
         exec(cmd,function(err,stdout,stderr){
             console.log(stdout);
@@ -104,7 +107,8 @@ var peerProbeServer2IfReady = function(ctx, done){
                         }
                     }
                     if(!found){
-                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer probe "+ctx.glusterpods[INDEX_SERVER2].status.podIP;
+                        var cmd = kubeCmd(ctx.this.podname, "gluster peer probe "+ctx.glusterpods[INDEX_SERVER2].status.podIP);
+
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);
@@ -133,7 +137,7 @@ var peerProbeServer2IfReady = function(ctx, done){
 var peerProbeServer1 = function(ctx, done){
 
     if(typeof ctx.glusterpods[INDEX_SERVER1] !== 'undefined'){
-        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer status";
+        var cmd =kubeCmd(ctx.this.podname, "gluster peer status");
         console.log(cmd);
         exec(cmd,function(err,stdout,stderr){
             console.log(stdout);
@@ -154,7 +158,7 @@ var peerProbeServer1 = function(ctx, done){
                         }
                     }
                     if(!found){
-                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer probe "+ctx.glusterpods[INDEX_SERVER1].status.podIP;
+                        var cmd = kubeCmd(ctx.this.podname, "gluster peer probe "+ctx.glusterpods[INDEX_SERVER1].status.podIP);
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);
@@ -183,14 +187,14 @@ var createVolumeIfNotExists = function(ctx, done){
 
     //also if server2 does not exist, don't create volume, until trusted storage pool has been created
     if(typeof ctx.glusterpods[INDEX_SERVER2] !== 'undefined'){
-        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume info all";
+        var cmd = kubeCmd(ctx.this.podname, "gluster volume info all");
         console.log(cmd);
         exec(cmd,function(err,stdout,stderr){
             console.log(stdout);
             console.log(stderr);
             if(!err){
                 if(stdout.indexOf('Volume Name: '+ctx.volumename)<=-1){
-                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume create "+ctx.volumename+" replica "+ctx.replication+" transport tcp "+ctx.this.ip+":/"+ctx.brickname+"/brick "+ctx.glusterpods[INDEX_SERVER2].status.podIP+":/"+ctx.brickname+"/brick";
+                    var cmd = kubeCmd(ctx.this.podname, "gluster volume create "+ctx.volumename+" replica "+ctx.replication+" transport tcp "+ctx.this.ip+":/"+ctx.brickname+"/brick "+ctx.glusterpods[INDEX_SERVER2].status.podIP+":/"+ctx.brickname+"/brick");
                     console.log(cmd);
                     exec(cmd,function(err,stdout,stderr){
                         console.log(stdout);
@@ -216,13 +220,13 @@ var createVolumeIfNotExists = function(ctx, done){
 
 var startVolumeIfNotStarted = function(ctx, done){
 
-    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume info "+ctx.volumename;
+    var cmd = kubeCmd(ctx.this.podname, "gluster volume info "+ctx.volumename);
     console.log(cmd);
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
         if(!err){
             if(stdout.indexOf('Status: Started')<=-1){
-                var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume start "+ctx.volumename;
+                var cmd = kubeCmd(ctx.this.podname, "gluster volume start "+ctx.volumename);
                 console.log(cmd);
                 exec(cmd,function(err,stdout,stderr){
                     console.log(stdout);
@@ -300,7 +304,7 @@ var expandIfNecessary = function(ctx, done){
 
 var getOrphanPodsInMultiplesOf = function(ctx, done){
 
-    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer status";
+    var cmd = kubeCmd(ctx.this.podname, "gluster peer status");
     console.log(cmd);
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
@@ -370,7 +374,7 @@ var getOrphanPodsInMultiplesOf = function(ctx, done){
 var probePod = function(ctx, orphanPod, done){
 
     if(typeof orphanPod !== 'undefined'){
-        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer status";
+        var cmd = kubeCmd(ctx.this.podname, "gluster peer status");
         console.log(cmd);
         exec(cmd,function(err,stdout,stderr){
             console.log(stdout);
@@ -378,6 +382,7 @@ var probePod = function(ctx, orphanPod, done){
             if(!err){
                 var checks = [orphanPod.status.podIP];
                 var found = false;
+                // Does't work now
                 dns.reverse(orphanPod.status.podIP,function(err,domains){
                     if(!err){
                         for(var i=0; i<domains.length; i++){
@@ -391,7 +396,7 @@ var probePod = function(ctx, orphanPod, done){
                         }
                     }
                     if(!found){
-                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer probe "+orphanPod.status.podIP;
+                        var cmd = kubeCmd(ctx.this.podname, "gluster peer probe "+orphanPod.status.podIP);
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);
@@ -418,7 +423,7 @@ var probePod = function(ctx, orphanPod, done){
 
 var addBricksIfMissing = function(ctx, done){
 
-    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume info "+ctx.volumename;
+    var cmd = kubeCmd(ctx.this.podname, "gluster volume info "+ctx.volumename);
     console.log(cmd);
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
@@ -474,7 +479,7 @@ var addBricksIfMissing = function(ctx, done){
                     }
                     if(bricks.length > 0){
                         var brickslist = bricks.join(' ');
-                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume add-brick "+ctx.volumename+" replica "+ctx.replication+" "+brickslist;
+                        var cmd = kubeCmd(ctx.this.podname, "gluster volume add-brick "+ctx.volumename+" replica "+ctx.replication+" "+brickslist);
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);
@@ -506,7 +511,7 @@ var addBricksIfMissing = function(ctx, done){
 
 var rebalanceNodes = function(ctx, done){
 
-    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume rebalance "+ctx.volumename+" start";
+    var cmd = kubeCmd(ctx.this.podname, "gluster volume rebalance "+ctx.volumename+ " start");
     console.log(cmd);
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
@@ -517,7 +522,7 @@ var rebalanceNodes = function(ctx, done){
                 (function queryStatusRebalance(){
                     if(timesqueried < REBALANCE_QUERYSTATUS_MAXQUERIES){
                         timesqueried += 1;
-                        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume rebalance "+ctx.volumename+" status";
+                        var cmd = kubeCmd(ctx.this.podname, "gluster volume rebalance "+ctx.volumename+ " status");
                         console.log(cmd);
                         exec(cmd,function(err,stdout,stderr){
                             console.log(stdout);

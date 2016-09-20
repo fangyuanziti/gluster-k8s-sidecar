@@ -8,6 +8,9 @@ const HEAL_QUERYPROGRESS_MAXQUERIES = 25;
 const FIXLAYOUT_QUERYPROGRESS_INTERVAL = 5;
 const FIXLAYOUT_QUERYPROGRESS_MAXQUERIES = 25;
 
+var kubeCmd = require('./common').kubeCmd;
+var Pod = require('./common').Pod;
+
 var tryToRecoverPeer = function(ctx, peer, allpeers, done){
 
     //based on this https://support.rackspace.com/how-to/recover-from-a-failed-server-in-a-glusterfs-array/
@@ -48,25 +51,26 @@ var tryToRecoverPeer = function(ctx, peer, allpeers, done){
 
 var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
 
-    var cmd = "kubectl exec "+newpod.metadata.name+" -- service glusterfs-server stop";
+    const pod = new Pod(newpod.metadata.name);
+    var cmd = pod.kubeCmd("service glusterfs-server stop");
     console.log(cmd);
     exec(cmd,function(err,stdout,stderr){
         console.log(stdout);
         console.log(stderr);
         if(!err){
-            var cmd = "kubectl exec "+newpod.metadata.name+' -- bash -c \'sed -i "s/\\(UUID\\)=\\(.*\\)/\\1='+badpeer['Uuid']+'/g" /var/lib/glusterd/glusterd.info && cat /var/lib/glusterd/glusterd.info\'';
+            var cmd = pod.kubeCmd('bash -c \'sed -i "s/\\(UUID\\)=\\(.*\\)/\\1='+badpeer['Uuid']+'/g" /var/lib/glusterd/glusterd.info && cat /var/lib/glusterd/glusterd.info\'');
             console.log(cmd);
             exec(cmd,function(err,stdout,stderr){
                 console.log(stdout);
                 console.log(stderr);
                 if(!err){
-                    var cmd = "kubectl exec "+newpod.metadata.name+" -- service glusterfs-server start";
+                    var cmd =pod.kubeCmd("service glusterfs-server start");
                     console.log(cmd);
                     exec(cmd,function(err,stdout,stderr){
                         console.log(stdout);
                         console.log(stderr);
                         if(!err){
-                            var cmd = "kubectl exec "+newpod.metadata.name+" -- gluster peer status";
+                            var cmd = pod.kubeCmd("gluster peer status");
                             console.log(cmd);
                             exec(cmd,function(err,stdout,stderr){
                                 console.log(stdout);
@@ -77,7 +81,7 @@ var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
                                         if(allpeers[i]['Hostname'] != badpeer['Hostname']){
                                             (function(peer){
                                                 tasks.push(function(cb){
-                                                    var cmd = "kubectl exec "+newpod.metadata.name+" -- gluster peer probe "+peer['Hostname'];
+                                                    var cmd = pod.kubeCmd("gluster peer probe "+peer['Hostname']);
                                                     console.log(cmd);
                                                     exec(cmd,function(err,stdout,stderr){
                                                         console.log(stdout);
@@ -94,37 +98,37 @@ var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
                                     }
                                     async.parallel(tasks, function(err, results){
                                         if(!err){
-                                            var cmd = "kubectl exec "+newpod.metadata.name+" -- gluster peer status";
+                                            var cmd = pod.kubeCmd("gluster peer status");
                                             console.log(cmd);
                                             exec(cmd,function(err,stdout,stderr){
                                                 console.log(stdout);
                                                 console.log(stderr);
                                                 if(!err){
-                                                    var cmd = "kubectl exec "+newpod.metadata.name+" -- service glusterfs-server restart";
+                                                    var cmd = pod.kubeCmd("service glusterfs-server restart");
                                                     console.log(cmd);
                                                     exec(cmd,function(err,stdout,stderr){
                                                         console.log(stdout);
                                                         console.log(stderr);
                                                         if(!err){
-                                                            var cmd = "kubectl exec "+newpod.metadata.name+" -- gluster peer status";
+                                                            var cmd = pod.kubeCmd("gluster peer status");
                                                             console.log(cmd);
                                                             exec(cmd,function(err,stdout,stderr){
                                                                 console.log(stdout);
                                                                 console.log(stderr);
                                                                 if(!err){
-                                                                    var cmd = "kubectl exec "+newpod.metadata.name+" -- gluster volume status";
+                                                                    var cmd = pod.kubeCmd("gluster volume status");
                                                                     console.log(cmd);
                                                                     exec(cmd,function(err,stdout,stderr){
                                                                         console.log(stdout);
                                                                         console.log(stderr);
                                                                         if(!err){
-                                                                            var cmd = "kubectl exec "+newpod.metadata.name+" -- bash -c 'yes | gluster volume sync "+ctx.this.ip+" all'";
+                                                                            var cmd = pod.kubeCmd("bash -c 'yes | gluster volume sync "+ctx.this.ip+" all'");
                                                                             console.log(cmd);
                                                                             exec(cmd,function(err,stdout,stderr){
                                                                                 console.log(stdout);
                                                                                 console.log(stderr);
                                                                                 if(!err){
-                                                                                    var cmd = "kubectl exec "+ctx.this.podname+" -- getfattr -n trusted.glusterfs.volume-id /"+ctx.volumename+"/brick";
+                                                                                    var cmd = new Pod(ctx.this.podname).kubeCmd("getfattr -n trusted.glusterfs.volume-id /"+ctx.volumename+"/brick");
                                                                                     console.log(cmd);
                                                                                     exec(cmd,function(err,stdout,stderr){
                                                                                         console.log(stdout);
@@ -142,19 +146,20 @@ var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
                                                                                                 }
                                                                                             }
                                                                                             if(volumeid){
-                                                                                                var cmd = "kubectl exec "+newpod.metadata.name+" -- setfattr -n trusted.glusterfs.volume-id -v '"+volumeid+"' /"+ctx.volumename+"/brick";
+                                                                                                var cmd = pod.kubeCmd("setfattr -n trusted.glusterfs.volume-id -v '"+volumeid+"' /"+ctx.volumename+"/brick");
                                                                                                 console.log(cmd);
                                                                                                 exec(cmd,function(err,stdout,stderr){
                                                                                                     console.log(stdout);
                                                                                                     console.log(stderr);
                                                                                                     if(!err){
-                                                                                                        var cmd = "kubectl exec "+newpod.metadata.name+" -- service glusterfs-server restart";
+                                                                                                        var cmd = pod.kubeCmd("service glusterfs-server restart");
                                                                                                         console.log(cmd);
                                                                                                         exec(cmd,function(err,stdout,stderr){
                                                                                                             console.log(stdout);
                                                                                                             console.log(stderr);
                                                                                                             if(!err){
-                                                                                                                var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume heal "+ctx.volumename+" full";
+                                                                                                                const pod = new Pod(ctx.this.podname);
+                                                                                                                var cmd = pod.kubeCmd("gluster volume heal "+ctx.volumename+" full");
                                                                                                                 console.log(cmd);
                                                                                                                 exec(cmd,function(err,stdout,stderr){
                                                                                                                     console.log(stdout);
@@ -164,7 +169,7 @@ var sameIPRecoverStrategy = function(ctx, badpeer, newpod, allpeers, done){
                                                                                                                         (function queryProgressHeal(){
                                                                                                                             if(timesqueried < HEAL_QUERYPROGRESS_MAXQUERIES){
                                                                                                                                 timesqueried += 1;
-                                                                                                                                var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume heal "+ctx.volumename+" info";
+                                                                                                                                var cmd = pod.kubeCmd("gluster volume heal "+ctx.volumename+" info");
                                                                                                                                 console.log(cmd);
                                                                                                                                 exec(cmd,function(err,stdout,stderr){
                                                                                                                                     console.log(stdout);
@@ -265,21 +270,22 @@ var diffIPRecoverStrategy = function(ctx, badpeer, allpeers, done){
     }
     if(orphansCandidates.length > 0){
         var orphanChosen = orphansCandidates[Math.floor(Math.random()*orphansCandidates.length)];//choose one randomly
-        var cmd = "kubectl exec "+ctx.this.podname+" -- gluster peer probe "+orphanChosen.status.podIP;
+        const pod = new Pod(ctx.this.podname);
+        var cmd = pod.kubeCmd("gluster peer probe "+orphanChosen.status.podIP);
         console.log(cmd);
         exec(cmd,function(err,stdout,stderr){
             console.log(stdout);
             console.log(stderr);
             if(!err){
                 if(stdout.indexOf('successful')>-1){
-                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume replace-brick "+ctx.volumename+" replica "+ctx.replication+" "+badpeer['Hostname']+":/"+ctx.brickname+"/brick "+orphanChosen.status.podIP['Hostname']+":/"+ctx.brickname+"/brick commit force";
+                    var cmd = pod.kubeCmd("gluster volume replace-brick "+ctx.volumename+" replica "+ctx.replication+" "+badpeer['Hostname']+":/"+ctx.brickname+"/brick "+orphanChosen.status.podIP['Hostname']+":/"+ctx.brickname+"/brick commit force");
                     console.log(cmd);
                     exec(cmd,function(err,stdout,stderr){
                         console.log(stdout);
                         console.log(stderr);
                         if(!err){
                             if(stdout.indexOf('success')>-1){
-                                var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume heal "+ctx.volumename+" full";
+                                var cmd = pod.kubeCmd("gluster volume heal "+ctx.volumename+" full");
                                 console.log(cmd);
                                 exec(cmd,function(err,stdout,stderr){
                                     console.log(stdout);
@@ -290,14 +296,14 @@ var diffIPRecoverStrategy = function(ctx, badpeer, allpeers, done){
                                             (function queryProgressHeal(){
                                                 if(timesqueried < HEAL_QUERYPROGRESS_MAXQUERIES){
                                                     timesqueried += 1;
-                                                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume heal "+ctx.volumename+" info";
+                                                    var cmd = pod.kubeCmd("gluster volume heal "+ctx.volumename+" info");
                                                     console.log(cmd);
                                                     exec(cmd,function(err,stdout,stderr){
                                                         console.log(stdout);
                                                         console.log(stderr);
                                                         if(!err){
                                                             if(stdout.indexOf('success')>-1){
-                                                                var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume rebalance "+ctx.volumename+" fix-layout start";
+                                                                var cmd = pod.kubeCmd("gluster volume rebalance "+ctx.volumename+" fix-layout start");
                                                                 console.log(cmd);
                                                                 exec(cmd,function(err,stdout,stderr){
                                                                     console.log(stdout);
@@ -308,7 +314,7 @@ var diffIPRecoverStrategy = function(ctx, badpeer, allpeers, done){
                                                                             (function queryProgressFixlayout(){
                                                                                 if(timesqueried < FIXLAYOUT_QUERYPROGRESS_MAXQUERIES){
                                                                                     timesqueried += 1;
-                                                                                    var cmd = "kubectl exec "+ctx.this.podname+" -- gluster volume rebalance "+ctx.volumename+" status";
+                                                                                    var cmd = pod.kubeCmd("gluster volume rebalance "+ctx.volumename+" status");
                                                                                     console.log(cmd);
                                                                                     exec(cmd,function(err,stdout,stderr){
                                                                                         console.log(stdout);
